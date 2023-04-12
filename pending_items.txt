@@ -1,0 +1,3 @@
+estrategy
+observer pattern
+hilos

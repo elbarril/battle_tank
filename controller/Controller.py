@@ -9,9 +9,9 @@ class Controller(PyGame):
         self.__view:GameView = GameView.get_instance(self.__game)
 
     def run_game(self) -> None:
-        while self.__game.level_factory.has_next_level and self.__game.player.has_lifes:
+        while self.__game.level_factory.has_next_level:
             self.__game.load_next_level()
-            while self.__game.player.has_lifes and self.__game.has_bots:
+            while self.__game.player.has_lifes:
                 self.__view.refresh()
                 self.__game.play_level()
             

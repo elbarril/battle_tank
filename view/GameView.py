@@ -33,12 +33,13 @@ class GameView:
             print(self.model.title.upper(), end="")
             if self.model.time:
                 print(" - ", end="")
+                print("Level:", str(self.model.level.id), end=" | ")
                 print("Time:", str(self.model.time), end=" | ")
                 print("Lifes:", str(self.model.player.lifes))
 
     def show_board(self) -> None:
-        for row in self.model.board.squares:
-            print(str([str(position.tank if position.tank else position.bullet if position.bullet else position.element) for position in row]))
+        for row in self.model.level.board.squares:
+            print(str([str(position.tank if position.tank else position.bullet if position.bullet else position.static) for position in row]))
 
     def clear_screen(self):
         if os.name == 'nt':

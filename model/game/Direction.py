@@ -12,13 +12,13 @@ from model.Constants import (
 )
 
 class Direction:
-    def __init__(self):
-        self.__directions = {
-            K_UP: DIRECTION_UP,
-            K_DOWN: DIRECTION_DOWN,
-            K_LEFT: DIRECTION_LEFT,
-            K_RIGHT: DIRECTION_RIGHT
-        }
+    __directions = {
+        K_UP: DIRECTION_UP,
+        K_DOWN: DIRECTION_DOWN,
+        K_LEFT: DIRECTION_LEFT,
+        K_RIGHT: DIRECTION_RIGHT
+    }
 
-    def get(self, key):
-        return self.__directions[key]
+    @classmethod
+    def get(cls, key):
+        return cls.__directions[key]
