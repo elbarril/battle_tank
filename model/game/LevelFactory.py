@@ -21,7 +21,7 @@ class LevelFactory:
         cls.__next_level:int = FIRST_LEVEL
         cls.__levels:dict[int, Level] = {}
 
-        for ID, LEVEL_DATA in enumerate(LEVELS):
+        for LEVEL_INDEX, LEVEL_DATA in enumerate(LEVELS):
             level_board = Board()
             for row, columns in enumerate(LEVEL_DATA["statics"]):
                 for column, static_id in enumerate(columns):
@@ -31,9 +31,9 @@ class LevelFactory:
             for bot in level_bots:
                 level_board.add_entity(bot.tank)
 
-            level = Level(id=ID, board=level_board)
+            level = Level(id=LEVEL_INDEX+1, board=level_board)
 
-            cls.__levels.setdefault(ID, level)
+            cls.__levels.setdefault(LEVEL_INDEX+1, level)
                     
         cls.__instance = cls()
 

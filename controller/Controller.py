@@ -1,10 +1,8 @@
-from controller.PyGame import PyGame
-
-class Controller(PyGame):
+class Controller:
     def __init__(self):
         from model.Game import Game
         from view.GameView import GameView
-        super().__init__()
+
         self.__game:Game = Game.get_instance()
         self.__view:GameView = GameView.get_instance(self.__game)
 
@@ -12,7 +10,6 @@ class Controller(PyGame):
         while self.__game.level_factory.has_next_level:
             self.__game.load_next_level()
             while self.__game.player.has_lifes:
-                self.__view.refresh()
                 self.__game.play_level()
-            
-            self.__view.refresh()
+                self.__view.refresh()
+            break

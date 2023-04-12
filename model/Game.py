@@ -75,8 +75,10 @@ class Game(PyGame):
                             self.player.tank.move()
                         elif isinstance(collided_entity, Movable):
                             self.player.remove_life()
-                            self.player.respawn()
-                        self.level.board.add_entity(self.player.tank)
+                            if self.player.has_lifes:
+                                self.player.respawn()
+                        if self.player.has_lifes:
+                            self.level.board.add_entity(self.player.tank)
                 if Keyboard.is_shoot_key(event.key):
                     bullet = self.player.tank.shoot()
                     self.level.board.add_entity(bullet)
