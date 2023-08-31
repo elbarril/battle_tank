@@ -1,3 +1,0 @@
-estrategy
-observer pattern
-hilos
