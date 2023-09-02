@@ -5,3 +5,5 @@ class Brick(MapObject):
     __image_file = 'brick.png'
     def __init__(self, row:int, column:int):
         super().__init__(row, column, self.__width, self.__height, self.__image_file)
+        
+        self.can_be_destroyed = True

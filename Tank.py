@@ -6,6 +6,6 @@ class Tank(MovableMapObject):
         super().__init__(row, column, width, height, image_url)
 
     def shoot(self) -> Bullet:
-        row = self.position.row + self.direction.row * self.size.height
-        column = self.position.column + self.direction.column * self.size.width
+        row = self.position.row + self.direction.row
+        column = self.position.column + self.direction.column
         return Bullet(row, column, self.direction, self)
