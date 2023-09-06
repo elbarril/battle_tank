@@ -1,34 +1,33 @@
 from MapObject import MapObject
-from Position import Position
 from Direction import Direction
+from Image import Image
 
 class MovableMapObject(MapObject):
-    def __init__(self, row:int, column:int, width:int, height:int, image_url:str):
-        super().__init__(row, column, width, height, image_url)
-        self.__direction = Direction()
+    def __init__(self, row:int, column:int, size:int, image_filename:str, direction:Direction):
+        super().__init__(row, column, size, image_filename + direction.suffix)
+        self.__direction = direction
+        self.__image_filename = image_filename
     
     def move(self):
-        self.position = self.next_position
+        self.row += self.direction.row
+        self.column += self.direction.column
         return self
+    
+    def rotate(self, direction:Direction):
+        self.__direction = direction
+        self.image = Image(self.__image_filename + direction.suffix)
 
     @property
     def next_position_area(self) -> tuple[int]:
-        left = self.next_position.x - self.size.width
-        top = self.next_position.y - self.size.height
-        right = self.next_position.x + self.size.width
-        bottom = self.next_position.y + self.size.height
+        left = self.left + self.direction.column
+        top = self.top + self.direction.row
+        right = self.right + self.direction.column
+        bottom = self.bottom + self.direction.row
         
         return(left, top, right, bottom)
     
     @property
-    def next_position(self):
-        row, column = self.position.row, self.position.column
-        return Position(row+self.direction.row, column+self.direction.column)
-    
-    @property
     def direction(self) -> Direction:
         return self.__direction
+
     
-    @direction.setter
-    def direction(self, direction:Direction) -> None:
-        self.__direction = direction

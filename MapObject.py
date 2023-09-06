@@ -1,14 +1,29 @@
-from Position import Position
-from tkinter import PhotoImage
-from Dimension import Dimension
+from Image import Image
 
 class MapObject:
-    def __init__(self, row:int, column:int, width:int, height:int, image_file:str):
-        self.__position = Position(row, column)
-        self.__size = Dimension(width, height)
-        self.__image = PhotoImage(file=image_file)
+    def __init__(self, row:int, column:int, size:int, image_filename:str):
+        self.__row = row
+        self.__column = column
+        self._radio = size // 2
+        self.__image = Image(image_filename)
         self.__can_destroy = self.__can_be_destroyed = False
 
+    @property
+    def image(self):
+        return self.__image
+
+    @image.setter
+    def image(self, image:Image):
+        self.__image = image
+
+    @property
+    def can_move(self):
+        return self.__can_move
+
+    @can_move.setter
+    def can_move(self, can_move):
+        self.__can_move = can_move
+    
     @property
     def can_destroy(self) -> bool:
         return self.__can_destroy
@@ -26,26 +41,33 @@ class MapObject:
         self.__can_be_destroyed = can_be_destroyed
     
     @property
-    def image(self) -> str:
-        return self.__image
+    def row(self) -> int:
+        return self.__row
+    
+    @row.setter
+    def row(self, row:int) -> None:
+        self.__row = row
+    
+    @property
+    def column(self) -> int:
+        return self.__column
+    
+    @column.setter
+    def column(self, column:int) -> None:
+        self.__column = column
 
     @property
-    def area(self) -> tuple[int]:
-        left = self.position.x - self.size.width / 2
-        top = self.position.y - self.size.height / 2
-        right = self.position.x + self.size.width / 2
-        bottom = self.position.y + self.size.height / 2
-        
-        return(left, top, right, bottom)
-    
+    def left(self) -> int:
+        return self.column - self._radio
+
     @property
-    def size(self):
-        return self.__size
-    
+    def top(self) -> int:
+        return self.row - self._radio
+
     @property
-    def position(self) -> Position:
-        return self.__position
-    
-    @position.setter
-    def position(self, position:Position) -> None:
-        self.__position = position
+    def right(self) -> int:
+        return self.column + self._radio
+
+    @property
+    def bottom(self) -> int:
+        return self.row + self._radio

@@ -1,14 +1,8 @@
 from MovableMapObject import MovableMapObject
 from Direction import Direction
+from Constants import MAP_OBJECT_MIN_SIZE, BULLET_IMAGE_FILENAME
 
 class Bullet(MovableMapObject):
-    __width = __height = 1
-    __image_url = 'bullet.png'
-    def __init__(self, row:int, column:int, direction:Direction, creator:MovableMapObject):
-        super().__init__(row, column, self.__width, self.__height, self.__image_url)
-        self.direction = direction
+    def __init__(self, row:int, column:int, direction:Direction):
+        super().__init__(row, column, MAP_OBJECT_MIN_SIZE, BULLET_IMAGE_FILENAME, direction)
         self.can_destroy = True
-        self.__creator = creator
-        
-    def creator(self) -> MovableMapObject:
-        return self.__creator

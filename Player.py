@@ -1,10 +1,9 @@
 from Tank import Tank
+from Constants import PLAYER_TANK_IMAGE_FILENAME, MAP_OBJECT_MAX_SIZE
 
 class Player:
-    __width = __height = 1
-    __image_url = 'playertank.png'
     def __init__(self, row:int, column:int):
-        self.__tank = Tank(row, column, self.__width, self.__height, self.__image_url)
+        self.__tank = Tank(row, column, MAP_OBJECT_MAX_SIZE, PLAYER_TANK_IMAGE_FILENAME)
 
     @property
     def tank(self) -> Tank:

@@ -1,34 +1,47 @@
 from Player import Player
-from Brick import Brick
 from Bot import Bot
+from Wall import Wall
 
-LEVELS = {
-    1: {
-        "player": (25,25),
-        "obstacles": [
-            (1,25),(1,26),(1,27),(1,28),
-            (2,25),(2,26),(2,27),(2,28)
-        ],
-        "bots": [
-            (33,33),
-            (33,10)
-        ]
-    }
-}
+from Constants import LEVELS
+from Constants import MAP_OBJECT_MAX_SIZE, MAP_OBJECT_MAX_RADIO
+from Constants import (
+    WALL_MNCODE,
+    BOT_MNCODE,
+    PLAYER_MNCODE
+)
 
 class Level:
     def __init__(self, key:int):
         self.__key = key
+        self.__map_objects:dict[str,list] = {
+            "walls": [],
+            "tanks": [],
+            "players": []
+        }
         
+        for pos_y, row in enumerate(LEVELS[key]):
+            for pos_x, map_object_number_code in enumerate(row):
+                obj_row = pos_y*MAP_OBJECT_MAX_SIZE
+                obj_column = pos_x*MAP_OBJECT_MAX_SIZE
+                if map_object_number_code == WALL_MNCODE:
+                    self.__map_objects["walls"].append(Wall(obj_row, obj_column))
+                elif map_object_number_code == BOT_MNCODE:
+                    self.__map_objects["tanks"].append(Bot(obj_row+MAP_OBJECT_MAX_RADIO, obj_column+MAP_OBJECT_MAX_RADIO))
+                elif map_object_number_code == PLAYER_MNCODE:
+                    self.__map_objects["players"].append(Player(obj_row+MAP_OBJECT_MAX_RADIO, obj_column+MAP_OBJECT_MAX_RADIO))
+            
     @property
-    def obstacles(self) -> list[Brick]:
-        return [Brick(row, column) for (row, column) in LEVELS[self.__key]["obstacles"]]
+    def key(self) -> int:
+        return self.__key
     
     @property
-    def player(self) -> Player:
-        row, column = LEVELS[self.__key]["player"]
-        return Player(row, column)
+    def players(self) -> list[Player]:
+        return self.__map_objects["players"]
         
     @property
     def bots(self) -> list[Bot]:
-        return [Bot(row, column) for (row, column) in LEVELS[self.__key]["bots"]]
+        return self.__map_objects["tanks"]
+        
+    @property
+    def walls(self) -> list[Wall]:
+        return self.__map_objects["walls"]

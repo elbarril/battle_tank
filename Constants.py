@@ -1,0 +1,61 @@
+POINT_WEIGHT = 10
+MAP_ROWS = 42
+MAP_COLUMS = 42
+
+MAP_OBJECT_MIN_SIZE = 1
+MAP_OBJECT_MAX_SIZE = 3
+
+MAP_OBJECT_MAX_RADIO = MAP_OBJECT_MAX_SIZE//2
+
+MAP_COLOR = 'gray'
+
+MAP_WIDTH = MAP_COLUMS*POINT_WEIGHT
+MAP_HEIGHT = MAP_ROWS*POINT_WEIGHT
+
+MIN_X_POSITION = MAP_OBJECT_MAX_RADIO
+MAX_X_POSITION = MAP_WIDTH - MAP_OBJECT_MAX_RADIO
+MIN_Y_POSITION = MAP_OBJECT_MAX_RADIO
+MAX_Y_POSITION = MAP_HEIGHT - MAP_OBJECT_MAX_RADIO
+
+IMAGE_FILE_EXTNSION = '.png'
+
+BRICK_IMAGE_FILENAME = 'brick'
+BULLET_IMAGE_FILENAME = 'bullet'
+PLAYER_TANK_IMAGE_FILENAME = 'playertank'
+
+LEFT_DIRECTION_KEY = 'a'
+UP_DIRECTION_KEY = 'w'
+RIGHT_DIRECTION_KEY = 'd'
+DOWN_DIRECTION_KEY = 's'
+
+DIRECTIONS = {
+    UP_DIRECTION_KEY: (-1, 0, '_up'),
+    DOWN_DIRECTION_KEY: (1, 0, '_down'),
+    LEFT_DIRECTION_KEY: (0, -1, '_left'),
+    RIGHT_DIRECTION_KEY: (0, 1, '_right')
+}
+
+SHOOT_KEY = '<space>'
+
+WALL_MNCODE = 1
+BOT_MNCODE = 2
+PLAYER_MNCODE = 3
+
+LEVELS = {
+    1: [
+        [1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,2,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,1,1,1,1,1,1,0,0,0,1],
+        [1,0,0,0,1,0,0,0,0,1,0,0,0,1],
+        [1,0,0,0,1,3,0,0,0,1,0,0,0,1],
+        [1,0,0,0,1,0,0,0,0,1,0,0,0,1],
+        [1,0,0,0,1,0,0,0,0,1,2,0,0,1],
+        [1,0,0,0,0,0,0,0,0,1,0,0,0,1],
+        [1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+    ]
+}

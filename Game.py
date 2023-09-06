@@ -3,8 +3,8 @@ from Map import Map
 from BulletMover import BulletMover
 from BotMover import BotMover
 from Level import Level
-from Keyboard import *
 from Direction import Direction, DIRECTIONS
+from Constants import SHOOT_KEY
 
 FIRST_LEVEL = 1
 
@@ -20,14 +20,19 @@ class Game(Tk):
         self.__bot_mover = BotMover(self.__map)
 
     def play(self) -> None:
-        self.__player_tank = self.__level.player.tank
+        player = self.__level.players[0]
+        self.__player_tank = player.tank
         self.__map.add(self.__player_tank)
         
+        self.__bot_mover.set_player(player)
+        
         for bot in self.__level.bots:
+            #self.__map.add(bot.tank)
             self.__bot_mover.add(bot.tank)
-            
-        for obstacle in self.__level.obstacles:
-            self.__map.add(obstacle)
+
+        for wall in self.__level.walls:
+            for brick in wall.bricks:
+                self.__map.add(brick)
 
         for direction_key in DIRECTIONS.keys():
             self.bind(direction_key, lambda e,dk=direction_key:self.__move_player_tank(dk))
@@ -43,10 +48,16 @@ class Game(Tk):
         
     def __reset(self):
         self.__map.delete("all")
+        self.__level = Level(self.__level.key)
         self.play()
     
     def __move_player_tank(self, direction_key:str) -> None:
-        self.__player_tank.direction = Direction(direction_key)
+        next_direction = Direction(direction_key)
+        if self.__player_tank.direction != next_direction:
+            self.__map.remove(self.__player_tank)
+            self.__player_tank.rotate(next_direction)
+            self.__map.add(self.__player_tank)
+            return
         next_area = self.__player_tank.next_position_area
         if not self.__map.is_out_of_limits(next_area):
             collided_objects = self.__map.get_objects_in_area(next_area)

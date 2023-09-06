@@ -1,16 +1,30 @@
-from Keyboard import *
-from Position import Position
+from Constants import DIRECTIONS
 
-DIRECTIONS = {
-    UP_DIRECTION_KEY: (-1,0),
-    DOWN_DIRECTION_KEY: (1,0),
-    LEFT_DIRECTION_KEY: (0,-1),
-    RIGHT_DIRECTION_KEY: (0,1)
-}
-
-class Direction(Position):
-    def __init__(self, key:str=UP_DIRECTION_KEY):
+class Direction:
+    def __init__(self, key:str):
+        self.__key = key
         if DIRECTIONS.get(key) is None:
             raise Exception()
-        row, column = DIRECTIONS[key]
-        super().__init__(row, column)
+        self.__row, self.__column, self.__suffix = DIRECTIONS[key]
+    
+    @property
+    def key(self):
+        return self.__key
+    
+    @property
+    def row(self):
+        return self.__row
+    
+    @property
+    def column(self):
+        return self.__column
+    
+    @property
+    def suffix(self):
+        return self.__suffix
+    
+    def __eq__(self, direction):
+        return isinstance(direction, Direction) and self.key == direction.key
+    
+    def __ne__(self, direction):
+        return not self.__eq__(direction)

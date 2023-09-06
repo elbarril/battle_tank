@@ -1,5 +1,3 @@
-POSITION_WIDTH = POSITION_HEIGHT = 10
-
 class Position:
     def __init__(self, row:int, column:int):
         self.__row = row
@@ -12,14 +10,14 @@ class Position:
     @property
     def column(self) -> int:
         return self.__column
+        
+    @row.setter
+    def row(self, row:int) -> None:
+        self.__row = row
     
-    @property
-    def x(self) -> int:
-        return self.column * POSITION_WIDTH
-    
-    @property
-    def y(self) -> int:
-        return self.row * POSITION_HEIGHT
+    @column.setter
+    def column(self, column:int) -> None:
+        self.__column = column
     
     def __repr__(self) -> str:
         return f"({self.row},{self.column})"
