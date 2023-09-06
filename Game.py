@@ -1,71 +1,63 @@
 from tkinter import Tk
 from Map import Map
-from BulletMover import BulletMover
-from BotMover import BotMover
+from MapObjectMover import MapObjectMover
 from Level import Level
 from Direction import Direction, DIRECTIONS
-from Constants import SHOOT_KEY
-
-FIRST_LEVEL = 1
+from Constants import FIRST_LEVEL, SHOOT_KEY
 
 class Game(Tk):
-    __max_bullets_at_same_time = 3
-    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.resizable(0,0)
-        self.__level = Level(FIRST_LEVEL)
         self.__map = Map(self)
-        self.__bullet_mover = BulletMover(self.__map)
-        self.__bot_mover = BotMover(self.__map)
+        self.__mover = MapObjectMover(self.__map)
 
-    def play(self) -> None:
-        player = self.__level.players[0]
-        self.__player_tank = player.tank
-        self.__map.add(self.__player_tank)
+    def play(self, level_id=FIRST_LEVEL) -> None:
+        level = Level(level_id)
+        self.__player_one, self.__player_two = level.players
+        self.__mover.add_player_tank(self.__player_one.tank)
+        self.__map.add(self.__player_one.tank)
         
-        self.__bot_mover.set_player(player)
-        
-        for bot in self.__level.bots:
-            #self.__map.add(bot.tank)
-            self.__bot_mover.add(bot.tank)
-
-        for wall in self.__level.walls:
+        for wall in level.walls:
             for brick in wall.bricks:
                 self.__map.add(brick)
-
-        for direction_key in DIRECTIONS.keys():
-            self.bind(direction_key, lambda e,dk=direction_key:self.__move_player_tank(dk))
-
-        self.bind(SHOOT_KEY, lambda e:self.__player_shoots())
         
+        for bot in level.bots: self.__mover.add_tank(bot.tank)
         
-        self.bind("<Escape>", lambda e:self.__reset())
-        
-        self.__bot_mover.run()
+        self.__bind_player_one_events()
         
         self.mainloop()
+    
+    def __bind_player_one_events(self):
+        def __player_one_tank_move(direction_key:str) -> None:
+            next_direction = Direction(direction_key)
+            if self.__player_one.tank.direction != next_direction:
+                self.__map.remove(self.__player_one.tank)
+                self.__player_one.tank.rotate(next_direction)
+                self.__map.add(self.__player_one.tank)
+                return
+            next_area = self.__player_one.tank.next_position_area
+            if not self.__map.is_out_of_limits(next_area):
+                collided_objects = self.__map.get_objects_in_area(next_area)
+                if self.__player_one.tank in collided_objects: collided_objects.remove(self.__player_one.tank)
+                if not len(collided_objects):
+                    self.__map.move(self.__player_one.tank)
+                
+            self.__map.update()
         
-    def __reset(self):
-        self.__map.delete("all")
-        self.__level = Level(self.__level.key)
-        self.play()
-    
-    def __move_player_tank(self, direction_key:str) -> None:
-        next_direction = Direction(direction_key)
-        if self.__player_tank.direction != next_direction:
-            self.__map.remove(self.__player_tank)
-            self.__player_tank.rotate(next_direction)
-            self.__map.add(self.__player_tank)
-            return
-        next_area = self.__player_tank.next_position_area
-        if not self.__map.is_out_of_limits(next_area):
-            collided_objects = self.__map.get_objects_in_area(next_area)
-            if self.__player_tank in collided_objects: collided_objects.remove(self.__player_tank)
-            if not len(collided_objects):
-                self.__map.move(self.__player_tank)
-    
-    def __player_shoots(self) -> None:
-        if len(self.__bullet_mover.bullets) < self.__max_bullets_at_same_time:
-            bullet = self.__player_tank.shoot()
-            self.__bullet_mover.add(bullet).run()
+        def __player_one_tank_shoots() -> None:
+            bullet = self.__player_one.tank.shoot()
+            self.__mover.add_bullet(bullet)
+            self.__map.update()
+
+        def __reset():
+            self.__map.delete('all')
+            self.quit()
+            self.play()
+        
+        for direction_key in DIRECTIONS.keys():
+            self.bind(direction_key, lambda e,dk=direction_key:__player_one_tank_move(dk))
+
+        self.bind(SHOOT_KEY, lambda e:__player_one_tank_shoots())
+
+        self.bind("<Escape>", lambda e:__reset())

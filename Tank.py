@@ -10,4 +10,4 @@ class Tank(MovableMapObject):
     def shoot(self) -> Bullet:
         row = self.row + self.direction.row
         column = self.column + self.direction.column
-        return Bullet(row, column, self.direction)
+        return Bullet(row, column, self.direction, self)
