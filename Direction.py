@@ -1,15 +1,6 @@
-from Constants import DIRECTIONS
-
 class Direction:
-    def __init__(self, key:str):
-        self.__key = key
-        if DIRECTIONS.get(key) is None:
-            raise Exception()
-        self.__row, self.__column, self.__suffix = DIRECTIONS[key]
-    
-    @property
-    def key(self):
-        return self.__key
+    def __init__(self, values:tuple[int|str]):
+        self.__row, self.__column, self.__suffix = values
     
     @property
     def row(self):
@@ -24,7 +15,7 @@ class Direction:
         return self.__suffix
     
     def __eq__(self, direction):
-        return isinstance(direction, Direction) and self.key == direction.key
+        return isinstance(direction, Direction) and self.row == direction.row and self.column == direction.column
     
     def __ne__(self, direction):
         return not self.__eq__(direction)

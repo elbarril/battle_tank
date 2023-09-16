@@ -9,7 +9,7 @@ MAP_OBJECT_MAX_SIZE = 3
 
 MAP_OBJECT_MAX_RADIO = MAP_OBJECT_MAX_SIZE//2
 
-MAP_COLOR = 'gray'
+MAP_COLOR = 'white'
 
 MAP_WIDTH = MAP_COLUMS*POINT_WEIGHT
 MAP_HEIGHT = MAP_ROWS*POINT_WEIGHT
@@ -25,39 +25,65 @@ BRICK_IMAGE_FILENAME = 'brick'
 BULLET_IMAGE_FILENAME = 'bullet'
 PLAYER_TANK_IMAGE_FILENAME = 'playertank'
 
-LEFT_DIRECTION_KEY = 'a'
-UP_DIRECTION_KEY = 'w'
-RIGHT_DIRECTION_KEY = 'd'
-DOWN_DIRECTION_KEY = 's'
+W,B,P,Q = 1,2,11,12
 
-DIRECTIONS = {
-    UP_DIRECTION_KEY: (-1, 0, '_up'),
-    DOWN_DIRECTION_KEY: (1, 0, '_down'),
-    LEFT_DIRECTION_KEY: (0, -1, '_left'),
-    RIGHT_DIRECTION_KEY: (0, 1, '_right')
-}
+WALL_MNCODE = W
+BOT_MNCODE = B
+PLAYER1_MNCODE = P
+PLAYER2_MNCODE = Q
 
-SHOOT_KEY = '<space>'
-
-WALL_MNCODE = 1
-BOT_MNCODE = 2
-PLAYER_MNCODE = 3
-
-LEVELS = {
-    1: [
-        [1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-        [1,0,0,0,0,0,0,0,0,0,0,0,0,1],
-        [1,0,0,0,0,0,0,0,0,0,0,0,0,1],
-        [1,0,0,0,0,0,0,0,0,0,0,0,0,1],
-        [1,0,0,0,0,0,0,0,0,0,0,0,0,1],
-        [1,0,0,0,0,0,0,0,0,0,0,0,0,1],
-        [1,0,2,0,0,0,0,0,0,0,0,0,0,1],
-        [1,0,0,0,1,1,1,1,1,1,0,0,0,1],
-        [1,0,0,0,1,0,0,0,0,1,0,0,0,1],
-        [1,0,0,0,1,3,0,0,0,1,0,0,0,1],
-        [1,0,0,0,1,0,0,0,0,1,0,0,0,1],
-        [1,0,0,0,1,0,0,0,0,1,2,0,0,1],
-        [1,0,0,0,0,0,0,0,3,1,0,0,0,1],
-        [1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+LEVEL_MAP = {
+    FIRST_LEVEL: [
+        [W,W,W,W,W,W,W,W,W,W,W,W,W,W],
+        [W,0,0,0,0,0,0,0,0,0,0,0,0,W],
+        [W,0,0,0,0,0,0,0,0,0,0,0,0,W],
+        [W,0,0,0,0,0,0,0,0,0,0,0,0,W],
+        [W,0,0,0,0,0,0,0,0,0,0,0,0,W],
+        [W,0,0,0,0,0,0,0,0,0,0,0,0,W],
+        [W,0,B,0,0,0,0,0,0,0,0,0,0,W],
+        [W,0,0,0,W,W,W,W,W,W,0,0,0,W],
+        [W,0,0,0,W,0,0,0,0,W,0,0,0,W],
+        [W,0,0,0,W,P,0,0,0,W,0,0,0,W],
+        [W,0,0,0,W,0,0,0,0,W,0,0,0,W],
+        [W,0,0,0,W,0,0,0,0,W,B,0,0,W],
+        [W,0,0,0,0,0,0,0,0,W,0,0,0,W],
+        [W,W,W,W,W,W,W,W,W,W,W,W,W,W]
     ]
 }
+
+DIRECTION_LEFT = (0, -1, '_left')
+DIRECTION_UP = (-1, 0, '_up')
+DIRECTION_RIGHT = (0, 1, '_right')
+DIRECTION_DOWN = (1, 0, '_down')
+        
+P1_LDK = 'a'
+P1_UDK = 'w'
+P1_RDK = 'd'
+P1_DDK = 's'
+P1_SK = '<space>'
+
+PLAYER1_SHOOT_KEYS = [P1_SK]
+
+PLAYER1_DIRECTIONS = {
+    P1_LDK: DIRECTION_LEFT,
+    P1_UDK: DIRECTION_UP,
+    P1_RDK: DIRECTION_RIGHT,
+    P1_DDK: DIRECTION_DOWN
+}
+
+P2_LDK = 'a'
+P2_UDK = 'w'
+P2_RDK = 'd'
+P2_DDK = 's'
+P2_SK = '<space>'
+
+PLAYER2_SHOOT_KEYS = [P2_SK]
+
+PLAYER2_DIRECTIONS = {
+    P2_LDK: DIRECTION_LEFT,
+    P2_UDK: DIRECTION_UP,
+    P2_RDK: DIRECTION_RIGHT,
+    P2_DDK: DIRECTION_DOWN
+}
+
+SHOOT_KEYS = PLAYER1_SHOOT_KEYS + PLAYER2_SHOOT_KEYS

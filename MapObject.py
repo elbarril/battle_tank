@@ -4,7 +4,7 @@ class MapObject:
     def __init__(self, row:int, column:int, size:int, image_filename:str):
         self.__row = row
         self.__column = column
-        self._radio = size / 2
+        self._radio = size // 2
         self.__image = Image(image_filename)
         self.__can_destroy = self.__can_be_destroyed = False
 

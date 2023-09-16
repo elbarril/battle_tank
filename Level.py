@@ -1,47 +1,62 @@
 from Player import Player
+from PlayerOne import PlayerOne
+from PlayerTwo import PlayerTwo
 from Bot import Bot
 from Wall import Wall
 
-from Constants import LEVELS
+from Constants import LEVEL_MAP
 from Constants import MAP_OBJECT_MAX_SIZE, MAP_OBJECT_MAX_RADIO
 from Constants import (
     WALL_MNCODE,
     BOT_MNCODE,
-    PLAYER_MNCODE
+    PLAYER1_MNCODE,
+    PLAYER2_MNCODE
 )
 
+LEVEL_MAP_TYPE= {
+    WALL_MNCODE: Wall,
+    BOT_MNCODE: Bot,
+    PLAYER1_MNCODE: PlayerOne,
+    PLAYER2_MNCODE: PlayerTwo
+}
+
 class Level:
-    def __init__(self, key:int):
-        self.__key = key
-        self.__map_objects:dict[str,list] = {
-            "walls": [],
-            "tanks": [],
-            "players": []
-        }
-        
-        for pos_y, row in enumerate(LEVELS[key]):
-            for pos_x, map_object_number_code in enumerate(row):
-                obj_row = pos_y*MAP_OBJECT_MAX_SIZE
-                obj_column = pos_x*MAP_OBJECT_MAX_SIZE
-                if map_object_number_code == WALL_MNCODE:
-                    self.__map_objects["walls"].append(Wall(obj_row, obj_column))
-                elif map_object_number_code == BOT_MNCODE:
-                    self.__map_objects["tanks"].append(Bot(obj_row+MAP_OBJECT_MAX_RADIO, obj_column+MAP_OBJECT_MAX_RADIO))
-                elif map_object_number_code == PLAYER_MNCODE:
-                    self.__map_objects["players"].append(Player(obj_row+MAP_OBJECT_MAX_RADIO, obj_column+MAP_OBJECT_MAX_RADIO))
-            
+    def __init__(self, id:int):
+        self.__id = id
+
+        self.__map_objects:dict[int,list] = {key:[] for key in LEVEL_MAP_TYPE.keys()}
+
+    def create_map(self):
+        for Y, ROWS in enumerate(LEVEL_MAP[self.__id]):
+            for X, MNCODE in enumerate(ROWS):
+                map_type = LEVEL_MAP_TYPE.get(MNCODE)
+                if map_type:
+                    map_object:map_type = map_type(
+                        row = Y * MAP_OBJECT_MAX_SIZE + MAP_OBJECT_MAX_RADIO,
+                        column = X * MAP_OBJECT_MAX_SIZE + MAP_OBJECT_MAX_RADIO
+                    )
+                    self.__map_objects[MNCODE].append(map_object)
     @property
-    def key(self) -> int:
-        return self.__key
+    def has_next(self) -> bool:
+        return True if LEVEL_MAP.get(self.__id + 1) else False
+
+    @property
+    def next_level_id(self) -> int:
+        return self.__id + 1
+
+    @property
+    def id(self) -> int:
+        return self.__id
     
     @property
     def players(self) -> list[Player]:
-        return self.__map_objects["players"]
+        players = self.__map_objects[PLAYER1_MNCODE] + self.__map_objects[PLAYER2_MNCODE]
+        return players
         
     @property
     def bots(self) -> list[Bot]:
-        return self.__map_objects["tanks"]
+        return self.__map_objects[BOT_MNCODE]
         
     @property
     def walls(self) -> list[Wall]:
-        return self.__map_objects["walls"]
+        return self.__map_objects[WALL_MNCODE]
