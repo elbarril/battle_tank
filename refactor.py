@@ -59,31 +59,50 @@ DIRECTIONS:dict[str, tuple[int,int]] = {
     DIR_KEY_RIGHT: DIR_RIGHT
 }
 
-PLAYER_TANK_MAP_CODE = 1
-BOT_TANK_MAP_CODE = 2
+BULLET_MAP_CODE = "b"
+PLAYER_MAP_CODE = 1
+BOT_MAP_CODE = 2
 WALL_MAP_CODE = 3
 
-P = PLAYER_TANK_MAP_CODE
-B = BOT_TANK_MAP_CODE
+P = PLAYER_MAP_CODE
+B = BOT_MAP_CODE
 W = WALL_MAP_CODE
 
-MAP = [
-    [B,0,0,0,0,0,0,0,0,0,0,0,0,0,W],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,W,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,P,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,W,W],
-    [W,0,0,0,0,0,0,0,0,0,0,0,0,W,B]
-]
+MAP_OBJECTS = [P, B, W]
+
+FIRST_LEVEL = 1
+LEVELS = 1
+LEVEL_MAPS = {
+    FIRST_LEVEL: [
+        [B,0,0,0,0,0,0,0,0,0,0,0,0,0,W],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,W,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,P,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,W,W],
+        [W,0,0,0,0,0,0,0,0,0,0,0,0,W,B]
+    ]
+}
+
+DIRECTION_IMAGE_SUFFIX = {
+    DIR_KEY_UP: "_up",
+    DIR_KEY_LEFT: "_left",
+    DIR_KEY_DOWN: "_down",
+    DIR_KEY_RIGHT: "_right"
+}
+
+BULLET_IMAGE_FILENAME = "bullet"
+PLAYER_IMAGE_FILENAME = "playertank"
+BOT_IMAGE_FILENAME = "bottank"
+WALL_IMAGE_FILENAME = "brick"
 
 class Image(tk.PhotoImage):
     def __init__(self, filename:str, *args, **kwargs):
@@ -139,6 +158,7 @@ class MapObject(Square, ABC):
     def __init__(self, position:MapObjectPosition, image:Image, size:MapObjectSize):
         super().__init__(size)
         self.__id:int = None
+        self.__code:int = None
         self.__position = position
         self.__image = image
 
@@ -165,6 +185,12 @@ class MapObject(Square, ABC):
 
     @id.setter
     def id(self, id:int): self.__id = id
+
+    @property
+    def code(self): return self.__code
+
+    @code.setter
+    def code(self, code:int): self.__code = code
 
     @property
     def image(self): return self.__image
@@ -204,8 +230,9 @@ class MultipleMapObject(MapObject):
 class Wall(MultipleMapObject):
     __wall_size = MapObjectSize(WALL_WIDTH, WALL_HEIGHT)
     __brick_size = MapObjectSize(BRICK_WIDTH, BRICK_HEIGHT)
-    def __init__(self, map_positions:MapObjectPosition):
-        super().__init__(map_positions, Image("brick"), self.__wall_size, self.__brick_size)
+    def __init__(self, map_positions:MapObjectPosition, image:Image):
+        super().__init__(map_positions, image, self.__wall_size, self.__brick_size)
+        self.code = WALL_MAP_CODE
 
 class MovableSingleMapObject(SingleMapObject):
     def __init__(self, position:MapObjectPosition, direction:str, images:dict[str,Image], size:MapObjectSize):
@@ -239,33 +266,23 @@ class Bullet(MovableSingleMapObject):
     __bullet_size = MapObjectSize(BULLET_WIDTH, BULLET_HEIGHT)
     def __init__(self, position:MapObjectPosition, images:dict[str,Image], direction:str):
         super().__init__(position, direction, images, self.__bullet_size)
+        self.code = BULLET_MAP_CODE
 
 class Tank(MovableSingleMapObject):
     __tank_size = MapObjectSize(TANK_WIDTH, TANK_HEIGHT)
-    def __init__(self, position:MapObjectPosition, images:dict[str,Image], direction:str):
-        super().__init__(position, direction, images, self.__tank_size)
-        self.__bullets_images = {
-            DIR_KEY_UP: Image("bullet_up"),
-            DIR_KEY_LEFT: Image("bullet_left"),
-            DIR_KEY_DOWN: Image("bullet_down"),
-            DIR_KEY_RIGHT: Image("bullet_right")
-        }
+    def __init__(self, position:MapObjectPosition, images:dict[str,Image]):
+        super().__init__(position, DIR_KEY_UP, images["tank"], self.__tank_size)
+        self.__bullet_images = images["bullet"]
 
     def shoot(self) -> Bullet:
         move_y, move_x = DIRECTIONS[self.direction]
         y = self.position.y + move_y*self.height_radio/PIXELS + self.height_radio - BULLET_HEIGHT/2
         x = self.position.x + move_x*self.width_radio/PIXELS + self.width_radio - BULLET_WIDTH/2
-        return Bullet(MapObjectPosition(x, y), self.__bullets_images, self.direction)
+        return Bullet(MapObjectPosition(x, y), self.__bullet_images, self.direction)
 
 class Player:
     def __init__(self):
         self.__tank = None
-        self.__tank_images = {
-            DIR_KEY_UP: Image("playertank_up"),
-            DIR_KEY_LEFT: Image("playertank_left"),
-            DIR_KEY_DOWN: Image("playertank_down"),
-            DIR_KEY_RIGHT: Image("playertank_right")
-        }
 
     @property
     def tank_images(self): return self.__tank_images
@@ -279,6 +296,7 @@ class Player:
 
     @tank.setter
     def tank(self, tank:Tank) -> None:
+        tank.code = PLAYER_MAP_CODE
         self.__tank = tank
 
 class Map(tk.Canvas):
@@ -291,18 +309,17 @@ class Map(tk.Canvas):
         for object in map_object.list:
             map_x = object.position.x + object.width_radio
             map_y = object.position.y + object.height_radio
-            object.id = super().create_image(map_x, map_y, image=object.image)
+            object.id = self.create_image(map_x, map_y, image=object.image)
             self.__map_objects.setdefault(object.id, object)
         self.update()
         return map_object
     
-    def move(self, movable_map_object:MovableSingleMapObject) -> None:
-        move_y, move_x = DIRECTIONS[movable_map_object.direction]
-        super().move(movable_map_object.id, move_x, move_y)
+    def move(self, map_object:MapObject) -> None:
+        self.coords(map_object.id, map_object.position.x, map_object.position.y)
         self.update()
 
     def remove(self, map_object:MapObject) -> None:
-        super().delete(map_object.id)
+        self.delete(map_object.id)
         self.__map_objects.pop(map_object.id)
         self.update()
 
@@ -314,6 +331,7 @@ class Map(tk.Canvas):
         left, top, right, bottom = area
         map_object_ids = list(self.find_overlapping(left, top, right, bottom))
         map_objects = [object for id in map_object_ids for object in self.__map_objects.get(id).list]
+        map_objects = [self.__map_objects.get(id) for id in map_object_ids]
         return map_objects
 
 class Game(tk.Tk):
@@ -325,31 +343,31 @@ class Game(tk.Tk):
         self.__map = Map(self, width=MAP_WIDTH, height=MAP_HEIGHT, bg=MAP_COLOR)
         self.__map.pack()
 
-        self.__player = Player()
+        self.__players:list[Player] = []
         self.__bot = Bot(self)
 
         self.__bullets:list[Bullet] = []
         self.__bullet_mover:Thread = None
 
-    def load(self):
-        for row in range(len(MAP)):
-            for column in range(len(MAP[row])):
-                MAP_CODE = MAP[row][column]
-                if not MAP_CODE: continue
-                position = MapObjectPosition(x=column*COLUMN_WIDTH, y=row*ROW_HEIGHT)
-                if MAP_CODE == PLAYER_TANK_MAP_CODE:
-                    self.__player.tank = Tank(position, self.__player.tank_images, DIR_KEY_UP)
-                    self.__map.create(self.__player.tank)
-                elif MAP_CODE == BOT_TANK_MAP_CODE:
-                    tank = Tank(position, self.__bot.tank_images, DIR_KEY_UP)
-                    self.__map.create(tank)
-                    self.__bot.add_tank(tank)
-                elif MAP_CODE == WALL_MAP_CODE: self.__map.create(Wall(position))
+    def load(self, level_id:int=FIRST_LEVEL):
+        level = Level(level_id)
+        for map_object in level.map_objects:
+            self.__map.create(map_object)
+        
+        for player in level.player_tanks:
+            player = Player()
+            player.tank = tank
+            self.__players.append(player)
+
+        for tank in level.bot_tanks:
+             self.__bot.add_tank(tank)
+
         return self
 
     def start(self):
-        for direction_key in DIRECTION_KEYS: self.bind(direction_key, lambda e,t=self.__player.tank,dk=direction_key:self.move_tank(t,dk))
-        self.bind("<space>", lambda e,t=self.__player.tank:self.tank_shoots(t))
+        for player in self.__players:
+            for direction_key in DIRECTION_KEYS: self.bind(direction_key, lambda e,t=player.tank,dk=direction_key:self.move_tank(t,dk))
+            self.bind("<space>", lambda e,t=player.tank:self.tank_shoots(t))
         self.bind("<Escape>", lambda e,window=self:self.end(window))
         self.bind("f", lambda e,window=self:self.toggle_fullscreen(window))
         self.__bot.play()
@@ -360,6 +378,7 @@ class Game(tk.Tk):
         window.attributes("-fullscreen", self.__fullscreen)
 
     def end(self, window:tk.Tk):
+        self.__unbind_player_events()
         if self.__fullscreen: window.attributes("-fullscreen", False)
         window.quit()
 
@@ -384,7 +403,6 @@ class Game(tk.Tk):
             self.__bullet_mover.daemon = True
             self.__bullet_mover.start()
     
-    
     def __move_bullets(self):
         while len(self.__bullets):
             for bullet in self.__bullets:
@@ -405,9 +423,17 @@ class Game(tk.Tk):
     def __remove_map_object(self, map_object):
         self.__map.remove(map_object)
         if isinstance(map_object, Tank):
-            self.__bot.remove_tank(map_object)
+            player_tanks = [player.tank for player in self.__players]
+            if map_object in player_tanks:
+                self.__players.remove(player_tanks.index(map_object))
+                if not len(self.__players): self.end(self)
+            else: self.__bot.remove_tank(map_object)
         elif isinstance(map_object, Bullet):
             self.__bullets.remove(map_object)
+
+    def __unbind_player_events(self, player:Player):
+        for direction_key in DIRECTION_KEYS: self.unbind(direction_key)
+        self.unbind("<space>")
 
     def __get_collided_objects_in_next_area(self, movable_map_object:MovableSingleMapObject):
         map_objects = self.__map.get_collided_objects_by_area(movable_map_object.next_area)
@@ -417,16 +443,11 @@ class Game(tk.Tk):
 class Bot(Player):
     def __init__(self, game:Game):
         super().__init__()
-        self.tank_images = {
-            DIR_KEY_UP: Image("bottank_up"),
-            DIR_KEY_LEFT: Image("bottank_left"),
-            DIR_KEY_DOWN: Image("bottank_down"),
-            DIR_KEY_RIGHT: Image("bottank_right")
-        }
         self.__tanks:list[Tank] = []
         self.__game = game
 
     def add_tank(self, tank:Tank):
+        tank.code = BOT_MAP_CODE
         self.__tanks.append(tank)
 
     def remove_tank(self, tank:Tank):
@@ -445,5 +466,44 @@ class Bot(Player):
                 shoots = lambda t=tank: self.__game.tank_shoots(t)
                 action = random.choice([move, shoots])
                 action()
-    
+
+class Level:
+    __map_objects_classes = {
+        PLAYER_MAP_CODE: Tank,
+        BOT_MAP_CODE: Tank,
+        WALL_MAP_CODE: Wall
+    }
+
+    def __init__(self, id:int):
+        MAP = LEVEL_MAPS[id]
+        self.__map_objects:dict[int,MapObject] = {MAP_CODE:[] for MAP_CODE in MAP_OBJECTS}
+
+        self.__map_objects_images = {
+            PLAYER_MAP_CODE: {DIR_KEY: Image(PLAYER_IMAGE_FILENAMES[DIR_KEY]) for DIR_KEY in DIRECTION_KEYS},
+            BOT_MAP_CODE: {DIR_KEY: Image(BOT_IMAGE_FILENAMES[DIR_KEY]) for DIR_KEY in DIRECTION_KEYS},
+            WALL_MAP_CODE: Image(WALL_IMAGE_FILENAME)
+        }
+
+        for row in range(len(MAP)):
+            for column in range(len(MAP[row])):
+                map_object:MapObject = None
+                map_code = MAP[row][column]
+                if map_code:
+                    position = MapObjectPosition(x=column*COLUMN_WIDTH, y=row*ROW_HEIGHT)
+                    map_object = self.__create_map_object(map_code, position, self.__map_objects_images[map_code])
+                    self.__map_objects[map_code].append(map_object)
+
+    @property
+    def map_objects(self): return list(self.__map_objects.values())
+
+    @property
+    def player_tanks(self): return self.__map_objects[PLAYER_MAP_CODE]
+
+    @property
+    def bot_tanks(self): return self.__map_objects[BOT_MAP_CODE]
+
+    @classmethod
+    def __create_map_object(cls, map_code:int, *args, **kwargs):
+        return cls.__map_objects_classes[map_code](*args, **kwargs) 
+  
 Game().load().start()

@@ -1,0 +1,38 @@
+model
+	-MapModel
+	-MapObjectModel
+
+	-StaticMapObjectModel(MapObjectModel)
+	-MovableMapObjectModel(MapObjectModel)
+
+	-SingleMapObjectModel(MapObjectModel)
+	-MultipleMapObjetModel(MapObjectModel)
+
+	-TankModel(MovableMapObjectModel, SingleMapObjectModel)
+
+view
+	-MapView
+	-TankView
+
+viewModel
+	-MapViewModel
+	-TankViewModel
+
+constants
+	- config
+	- messages
+	- enums
+
+resources
+	- images
+		- playertank..png
+		- bottank..png
+		- brick..png
+		- bullet..png
+
+controllers
+	- PlayerOneController
+	- PlayerTwoController
+
+services
+	-helpers
