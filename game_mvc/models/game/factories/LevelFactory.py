@@ -3,7 +3,7 @@ from utils.Factory import Factory
 
 class LevelFactory(Factory):
     @classmethod
-    def new(cls, players) -> Level:
+    def new(cls) -> Level:
         next = cls._next_number(Level)
-        level = cls._create(Level, next, players)
+        level = cls._create(Level, next)
         return level

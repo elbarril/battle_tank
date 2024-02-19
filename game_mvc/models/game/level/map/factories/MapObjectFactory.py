@@ -1,6 +1,8 @@
 from models.game.level.map.MapObject import MapObject
 from models.game.level.map.objects.FluidMapObject import FluidMapObject
 from models.game.level.map.objects.SolidMapObject import SolidMapObject
+from models.game.player.Tank import Tank
+from models.game.player.BotTank import BotTank
 
 from utils.Factory import Factory
 
@@ -12,8 +14,9 @@ class MapObjectFactory(Factory):
     __map_objects = {
         "0": FluidMapObject,
         "1": SolidMapObject,
-        "O": FluidMapObject,
-        "T": FluidMapObject
+        "O": Tank,
+        "T": FluidMapObject,
+        "B": BotTank
     }
 
     @classmethod
@@ -21,5 +24,5 @@ class MapObjectFactory(Factory):
         if not object_char in cls.__map_objects:
             raise NotMappedMapObjectTypeException()
         object_type = cls.__map_objects.get(object_char)
-        if object_type: 
+        if object_type:
             return cls._create(object_type, position)

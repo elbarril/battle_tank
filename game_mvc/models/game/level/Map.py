@@ -14,7 +14,7 @@ class Map:
         return cls(map_data)
     
     def create(self, player_1=None, player_2=None):
-        return self.__objects.create(player_1, player_2)
+        self.__objects.create(player_1, player_2)
     
     def is_valid_position(self, position):
         return self.__objects.is_valid_position(position)
@@ -27,6 +27,10 @@ class Map:
 
     def remove_object(self, object):
         self.__objects.remove(object)
+
+    @property
+    def bots(self):
+        return self.__objects.bots
 
     def __iter__(self):
         return iter(self.__objects)

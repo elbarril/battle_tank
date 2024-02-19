@@ -4,15 +4,13 @@ from views.GameConsoleView import GameConsoleView
 game = Game()
 
 game.new_player()
-game.new_player()
 
-game.new_level().load_map().create(*tuple(game.players))
+level = game.new_level()
+level.load_map().create(*tuple(game.players))
+level.load_bots()
 
 game_console_view = GameConsoleView()
 game_console_view.show_map(game.level.map)
-
-player_1_tank = game.players.first.tank
-player_2_tank = game.players.second.tank
 
 from models.game.level.map.MovableMapObject import MovableMapObject
 def move(movable:MovableMapObject, direction):

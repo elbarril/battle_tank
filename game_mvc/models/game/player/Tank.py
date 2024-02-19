@@ -2,13 +2,11 @@ from models.game.level.map.MovableMapObject import MovableMapObject
 from constants.tank import *
 
 class Tank(MovableMapObject):
-    symbol = "T"
 
-    def __init__(self, player, position):
+    def __init__(self, position):
         super().__init__(position)
-        self.player = player
         self.is_solid = True
-        self.symbol = "B" if self.player.is_bot else str(self.player.number)
+        self.symbol = "T"
 
     @property
     def x(self): return self.position.x
@@ -17,4 +15,4 @@ class Tank(MovableMapObject):
     def y(self): return self.position.y
 
     def __str__(self):
-        return TO_STRING % (self.player, self.position)
+        return TO_STRING % self.position

@@ -1,11 +1,11 @@
-from models.game.player.Player import Player
+from models.game.player.AbstractPlayer import AbstractPlayer
 from utils.Collection import Collection
 from exceptions.player import *
 from exceptions.game import *
 
 class PlayerCollection(Collection):
     def add(self, player):
-        if player and not isinstance(player, Player):
+        if not isinstance(player, AbstractPlayer):
             raise NotPlayerInstanceException()
         super().add(player)
         return player
@@ -25,8 +25,8 @@ class PlayerCollection(Collection):
     def __tuple__(self):
         return tuple(self)
     
-    def __next__(self) -> Player:
+    def __next__(self) -> AbstractPlayer:
         return super().__next__()
     
-    def __getitem__(self, index) -> Player:
+    def __getitem__(self, index) -> AbstractPlayer:
         return super().__getitem__(index)

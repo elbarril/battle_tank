@@ -3,10 +3,8 @@ from utils.Singleton import Singleton
 from models.game.GameState import GameState
 
 from models.game.factories.PlayerFactory import PlayerFactory
-from models.game.factories.BotFactory import BotFactory
 from models.game.factories.LevelFactory import LevelFactory
 
-from models.game.collections.BotCollection import BotCollection
 from models.game.collections.PlayerCollection import PlayerCollection
 
 from constants.game import *
@@ -18,7 +16,6 @@ class Game(Singleton):
 
     def __init__(self):
         self.__players = PlayerCollection()
-        self.__bots = BotCollection()
 
     def new_player(self):
         if PlayerFactory.number() == MAX_PLAYERS:
@@ -28,13 +25,8 @@ class Game(Singleton):
         self.__state = GameState.TWO_PLAYERS_READY if self.__state == GameState.ONE_PLAYER_READY else GameState.ONE_PLAYER_READY
         return player
     
-    def new_bot(self):
-        bot = BotFactory.create()
-        self.__bots.add(bot)
-        return bot
-    
     def new_level(self):
-        self.__level = LevelFactory.new(self.__players)
+        self.__level = LevelFactory.new()
         return self.__level
     
     def play_level(self):
@@ -51,10 +43,6 @@ class Game(Singleton):
     @property
     def players(self):
         return self.__players
-    
-    @property
-    def bots(self):
-        return self.__bots
     
     def __str__(self):
         return TO_STRING % (self.__players, self.__level.number, self.__level.map, self.__bots)

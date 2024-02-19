@@ -1,4 +1,4 @@
-from models.game.collections.PlayerCollection import PlayerCollection, Player
+from models.game.player.Player import Player
 
 from models.game.level.map.MapObject import MapObject
 from models.game.level.map.factories.MapObjectFactory import MapObjectFactory
@@ -17,6 +17,7 @@ class MapObjectCollection:
         "O": None,
         "T": None
     }
+    __bots = []
 
     def __init__(self, map_data):
         if not (isinstance(map_data, list) and len(map_data)):
@@ -28,13 +29,16 @@ class MapObjectCollection:
         if player_2: self.__players["T"] = player_2
         for row, columns in enumerate(self.__map_data):
             self.__objects.append(columns)
-            for column, object in enumerate(columns):
+            for column, object_type in enumerate(columns):
                 position = MapObjectPosition(column,row)
-                player = self.__players.get(object)
-                if player:
-                    self.__objects[row][column] = player.create_tank(position)
-                else:
-                    self.__objects[row][column] = MapObjectFactory.create(object, position)
+                map_object = MapObjectFactory.create(object_type, position)
+                self.__objects[row][column] = map_object
+                player = self.__players.get(object_type)
+                if player: player.add_tank(map_object)
+                if object_type == "O": self.__bots.append(map_object)
+
+    @property
+    def bots(self): return self.__bots
 
     def add(self, object):
         if not isinstance(object, MapObject):

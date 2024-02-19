@@ -1,14 +1,17 @@
-from models.game.player.Player import Player
+from models.game.player.AbstractPlayer import AbstractPlayer
+from models.game.player.Tank import Tank
 from constants.bot import *
 from exceptions.bot import *
 
-class Bot(Player):
-    is_bot = True
+class Bot(AbstractPlayer):
+    def __init__(self, tank:Tank):
+        self.tank = tank
+        self.is_bot = True
 
-    def create_tank(self, position):
+    def add_tank(self, tank):
         if self.tank:
             raise BotPlayerAlreadyHasTankException()
-        return super().create_tank(position)
+        self.tank = tank
 
     def __str__(self):
         return TO_STRING % self.number
