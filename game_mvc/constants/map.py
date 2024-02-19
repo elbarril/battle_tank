@@ -1,0 +1,3 @@
+MAPS_PATH = "./maps/"
+MAPS_FILENAME_PREFIX = "level_"
+MAPS_FILE_EXTENSION = ".csv"
