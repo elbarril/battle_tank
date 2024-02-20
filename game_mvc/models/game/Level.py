@@ -6,21 +6,25 @@ from constants.level import TO_STRING, FIRST_LEVEL
 from exceptions.level import MapDoesNotExistsException
 
 class Level:
-    number = None
+    __number = None
     __map = None
 
     def __init__(self, number=FIRST_LEVEL):
-        self.number = LevelNumber(number)
+        self.__number = LevelNumber(number)
         self.__bots = BotCollection()
 
     def load_map(self):
-        self.__map = Map.read(self.number)
+        self.__map = Map.read(self.__number)
         return self.__map
 
     def load_bots(self):
-        for bot_tank in self.__map.bots:
+        if self.__map is None:
+            raise MapDoesNotExistsException()
+        from models.game.level.map.MapObjectChar import MapObjectChar
+        for bot_tank in self.__map.bot_tanks[MapObjectChar.BOT_TANK.value]:
             bot = BotFactory.create(bot_tank)
             self.__bots.add(bot)
+            self.__map.add_object(bot.tank)
 
     @property
     def map(self):
@@ -31,6 +35,10 @@ class Level:
     @property
     def bots(self):
         return self.__bots
+    
+    @property
+    def number(self):
+        return self.__number
 
     def __str__(self):
-        return TO_STRING % str(self.number)
+        return TO_STRING % str(self.__number)

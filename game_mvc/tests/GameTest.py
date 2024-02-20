@@ -63,5 +63,5 @@ class GameTest(unittest.TestCase):
         self.assertIsNone(bot_1.tank)
         self.assertIsNone(bot_2.tank)
         bot_1.create_tank((0,0))
-        with self.assertRaises(bot_exceptions.BotPlayerAlreadyHasTankException):
+        with self.assertRaises(bot_exceptions.BotAlreadyHasTankException):
             bot_1.create_tank((0,0))

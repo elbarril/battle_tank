@@ -1,14 +1,11 @@
-from abc import ABC, abstractmethod
-
-class Factory(ABC):
+class Factory:
     __creations = {}
 
     @classmethod
-    @abstractmethod
-    def _create(cls, type, *args):
-        type_count = cls.__creations[type] + 1 if type in cls.__creations else 1
+    def _create(cls, type, *args, **kwargs):
+        type_count = cls._next_number(type)
         cls.__creations.update({type:type_count})
-        return type(*args)
+        return type(*args, **kwargs)
     
     @classmethod
     def _number(cls, type):

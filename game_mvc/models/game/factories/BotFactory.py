@@ -1,5 +1,5 @@
-from models.game.player.Bot import Bot
 from utils.Factory import Factory
+from models.game.player.Bot import Bot
 
 class BotFactory(Factory):
     @classmethod

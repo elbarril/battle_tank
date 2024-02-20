@@ -1,14 +1,15 @@
 from models.game.player.AbstractPlayer import AbstractPlayer
-from models.game.player.Tank import Tank
+from models.game.player.PlayerTank import PlayerTank
 from constants.player import *
 from exceptions.player import *
 
 class Player(AbstractPlayer):
-    def add_tank(self, tank:Tank):
+    char = None
+
+    def add_tank(self, tank:PlayerTank):
         if self.tank:
             raise PlayerAlreadyHasTankException()
-        self.tank = tank
-        self.tank.symbol = str(self.number)
+        super().add_tank(tank)
 
     def __str__(self):
         return TO_STRING % self.number

@@ -10,6 +10,12 @@ class MapObject(ABC):
         self.position = position
         self.size = size
     
+    @property
+    def x(self): return self.position.x
+
+    @property
+    def y(self): return self.position.y
+
     def __str__(self):
         return self.symbol
     

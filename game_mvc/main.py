@@ -5,22 +5,20 @@ game = Game()
 
 game.new_player()
 
-level = game.new_level()
-level.load_map().create(*tuple(game.players))
-level.load_bots()
+map = game.new_level().map
 
 game_console_view = GameConsoleView()
-game_console_view.show_map(game.level.map)
+game_console_view.show_map(map)
 
 from models.game.level.map.MovableMapObject import MovableMapObject
 def move(movable:MovableMapObject, direction):
     next_position = movable.next_position(direction)
-    if not game.level.map.is_valid_position(next_position): return
-    if game.level.map.collision(next_position): return
-    game.level.map.remove_object(movable)
+    if not map.is_valid_position(next_position): return
+    if map.collision(next_position): return
+    map.remove_object(movable)
     movable.move(direction)
-    game.level.map.add_object(movable)
-    game_console_view.show_map(game.level.map)
+    map.add_object(movable)
+    game_console_view.show_map(map)
 
 
 events = [(key, lambda movable=player.tank,direction=direction:move(movable, direction)) for player in game.players for key,direction in player.movements]

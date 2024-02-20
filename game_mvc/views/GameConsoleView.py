@@ -3,6 +3,7 @@ from models.game.level.Map import Map
 
 class GameConsoleView:
     def show_map(self, map:Map):
+        print("")
         for row in map:
             print([obj.symbol for obj in row])
 

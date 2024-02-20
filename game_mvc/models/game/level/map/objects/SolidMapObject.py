@@ -1,7 +1,7 @@
 from models.game.level.map.MapObject import MapObject
     
 class SolidMapObject(MapObject):
-    symbol = "S"
+    symbol = "+"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -17,5 +17,5 @@ class PlayerMovements:
     }
 
     @classmethod
-    def get(self, number):
-        return self.__movements[number]
+    def get(self, player_number):
+        return self.__movements[player_number]
