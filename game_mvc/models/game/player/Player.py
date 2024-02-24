@@ -1,10 +1,11 @@
 from models.game.player.AbstractPlayer import AbstractPlayer
 from models.game.player.PlayerTank import PlayerTank
+from models.game.level.map.MapObjectType import MapObjectType
 from constants.player import *
 from exceptions.player import *
 
 class Player(AbstractPlayer):
-    char = None
+    type = None
 
     def add_tank(self, tank:PlayerTank):
         if self.tank:

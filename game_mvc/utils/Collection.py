@@ -1,12 +1,18 @@
 from abc import ABC, abstractmethod
 
 class Collection(ABC):
-    def __init__(self):
+    def __init__(self, max_items=None):
         self.__collection = []
+        self.__max_items = max_items
 
     @abstractmethod
     def add(self, object):
+        if self.__max_items and len(self) == self.__max_items:
+            raise Exception(f"Max items {object} exceeded in {self}.")
         self.__collection.append(object)
+    
+    def __setitem__(self, index, object):
+        self.__collection[index] = object
     
     def clear(self):
         self.__collection = []

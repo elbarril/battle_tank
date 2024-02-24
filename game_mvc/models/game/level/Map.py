@@ -1,62 +1,34 @@
-import csv
-
-from models.game.level.map.MapFilePath import MapFilePath
+from models.game.level.map.MapSize import MapSize
+from models.game.level.map.MapObject import MapObject
+from models.game.level.map.MapObjectType import MapObjectType
 from models.game.level.map.MapObjectPosition import MapObjectPosition
-
-from models.game.level.map.collections.MapObjectCollection import MapObjectCollection
-
+from models.game.level.map.MapMatrix import MapMatrix, MapMatrixRow
 from models.game.level.map.factories.MapObjectFactory import MapObjectFactory
 
-from exceptions.map import (
-    MapDataHasNotRowsException,
-    WrongPositionDataException
-)
+class Map(MapMatrix):
+    def __init__(self, map_size:MapSize=MapSize()):
+        super().__init__(map_size.height)
+        self.__size = map_size
 
-class Map:
-    __objects = MapObjectCollection()
-    __map_data:list[list[str]] = None
+    def add_row(self):
+        self.add(MapMatrixRow(self.__size.width))
 
-    def __init__(self, map_data):
-        if not (isinstance(map_data, list) and len(map_data)):
-            raise MapDataHasNotRowsException()
-        self.__map_data = map_data
-        self.__objects.set(map_data)
-
-    @classmethod
-    def read(cls, level_number):
-        with open(MapFilePath(level_number), mode="r") as level_map_file:
-            map_data = list(list(row) for row in csv.reader(level_map_file))
-        return cls(map_data)
-    
-    def create(self):
-        for row, columns in enumerate(self.__map_data):
-            for column, object_char in enumerate(columns):
-                position = MapObjectPosition(column,row)
-                map_object = MapObjectFactory.create(object_char, position)
-                self.__objects.add(map_object, object_char)
-    
-    def is_valid_position(self, position):
+    def is_valid_position(self, position:MapObjectPosition):
         if not isinstance(position, MapObjectPosition):
-            raise WrongPositionDataException()
-        x,y = position.x, position.y
-        return y >= 0 and y < len(self.__map_data) and x >= 0 and x < len(self.__map_data[y])
+            raise Exception()
+        return position.x + position.y >= 0 and position.y in self and position.x in self[position.y]
+    
+    def collision(self, position:MapObjectPosition):
+        if not isinstance(position, MapObjectPosition):
+            raise Exception()
+        return self[position.y][position.x].is_solid
+    
+    def remove_object(self, object:MapObject):
+        if not isinstance(object, MapObject):
+            raise Exception()
+        self[object.position.y][object.position.x] = MapObjectFactory.create(MapObjectType.FLUID, object.position.x, object.position.y)
 
-    def collision(self, position):
-        return self.__objects[position].is_solid
-
-    def add_object(self, object):
-        self.__objects.add(object)
-
-    def remove_object(self, object):
-        self.__objects.remove(object)
-
-    @property
-    def player_tanks(self):
-        return self.__objects.player_tanks
-
-    @property
-    def bot_tanks(self):
-        return self.__objects.bot_tanks
-
-    def __iter__(self):
-        return iter(self.__objects)
+    def add_object(self, object:MapObject):
+        if not isinstance(object, MapObject):
+            raise Exception()
+        self[object.position.y][object.position.x] = object

@@ -9,4 +9,6 @@ class AbstractPlayer(ABC):
 
     @abstractmethod
     def add_tank(self, tank:Tank):
+        if not isinstance(tank, Tank):
+            raise Exception()
         self.tank = tank

@@ -1,5 +1,6 @@
 from models.game.level.map.MapObject import MapObject
-from models.game.level.map.MapObjectChar import MapObjectChar
+from models.game.level.map.MapObjectType import MapObjectType
+from models.game.level.map.MapObjectPosition import MapObjectPosition
 
 from models.game.level.map.objects.FluidMapObject import FluidMapObject
 from models.game.level.map.objects.SolidMapObject import SolidMapObject
@@ -15,18 +16,24 @@ class NotMappedMapObjectTypeException(Exception):
 
 
 class MapObjectFactory(Factory):
-    __map_objects = {
-        MapObjectChar.FLUID.value: FluidMapObject,
-        MapObjectChar.SOLID.value: SolidMapObject,
-        MapObjectChar.PLAYER_ONE.value: PlayerTank,
-        MapObjectChar.PLAYER_TWO.value: PlayerTank,
-        MapObjectChar.BOT_TANK.value: BotTank
+    __map_object_classes = {
+        MapObjectType.FLUID: FluidMapObject,
+        MapObjectType.SOLID: SolidMapObject,
+        MapObjectType.PLAYER_ONE: PlayerTank,
+        MapObjectType.PLAYER_TWO: PlayerTank,
+        MapObjectType.BOT_TANK: BotTank
     }
 
     @classmethod
-    def create(cls, object_char, *args, **kwargs) -> MapObject:
-        if not object_char in cls.__map_objects:
+    def create(cls, object_type, x, y) -> MapObject:
+        if not object_type in cls.__map_object_classes:
             raise NotMappedMapObjectTypeException()
-        object_type = cls.__map_objects.get(object_char)
-        if object_type:
-            return cls._create(object_type, *args, **kwargs)
+        object_class = cls.__map_object_classes.get(object_type)
+        if object_class:
+            position = MapObjectPosition(x, y)
+            return cls._create(object_class, position)
+        
+    @classmethod
+    def create_empty(cls, position):
+        object_class = cls.__map_object_classes.get(MapObjectType.FLUID.value)
+        return cls._create(object_class, position)

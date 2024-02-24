@@ -1,5 +1,5 @@
 from models.game.level.map.MapObject import MapObject
-from models.game.level.map.MovableMapObjectDirection import MapObjectDirection
+from models.game.level.map.MovableMapObjectDirection import MapObjectDirection, MapObjectPosition
 from exceptions.map import *
 
 class MovableMapObject(MapObject):
@@ -11,7 +11,7 @@ class MovableMapObject(MapObject):
             raise WrongDirectionDataException()
         self.position = self.next_position(direction)
 
-    def next_position(self, direction):
+    def next_position(self, direction) -> MapObjectPosition:
         if not isinstance(direction, MapObjectDirection):
             raise WrongDirectionDataException()
         return self.position + direction

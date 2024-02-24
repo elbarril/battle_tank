@@ -15,11 +15,9 @@ class Game(Singleton):
     __state = GameState.STARTED
 
     def __init__(self):
-        self.__players = PlayerCollection()
+        self.__players = PlayerCollection(MAX_PLAYERS)
 
     def new_player(self):
-        if len(self.__players) == MAX_PLAYERS:
-            raise MaxPlayersExceededException()
         player = PlayerFactory.create()
         self.__players.add(player)
         self.__state = GameState.TWO_PLAYERS_READY if self.__state == GameState.ONE_PLAYER_READY else GameState.ONE_PLAYER_READY
@@ -27,12 +25,7 @@ class Game(Singleton):
     
     def new_level(self):
         self.__level = LevelFactory.create()
-        self.__level.load_map().create()
-        self.__level.load_bots()
-        for player in self.__players:
-            player.add_tank(self.__level.map.player_tanks[player.char])
-            player.tank.symbol = str(player.number)
-            self.__level.map.add_object(player.tank)
+        self.__level.load_map(self.__players)
         return self.__level
     
     def play_level(self):

@@ -17,5 +17,5 @@ class MapObject(ABC):
     def y(self): return self.position.y
 
     def __str__(self):
-        return self.symbol
+        return f"{self.position}"
     

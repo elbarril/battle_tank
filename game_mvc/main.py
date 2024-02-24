@@ -13,8 +13,7 @@ game_console_view.show_map(map)
 from models.game.level.map.MovableMapObject import MovableMapObject
 def move(movable:MovableMapObject, direction):
     next_position = movable.next_position(direction)
-    if not map.is_valid_position(next_position): return
-    if map.collision(next_position): return
+    if not map.is_valid_position(next_position) and map.collision(next_position): return
     map.remove_object(movable)
     movable.move(direction)
     map.add_object(movable)

@@ -1,35 +1,40 @@
-from models.game.level.LevelNumber import LevelNumber
+
 from models.game.factories.BotFactory import BotFactory
 from models.game.collections.BotCollection import BotCollection
+from models.game.collections.PlayerCollection import PlayerCollection
+
+from models.game.level.MapDataReader import MapDataReader
+from models.game.level.LevelNumber import LevelNumber
 from models.game.level.Map import Map
+
+from models.game.level.map.factories.MapObjectFactory import MapObjectFactory, MapObjectType
 from constants.level import TO_STRING, FIRST_LEVEL
-from exceptions.level import MapDoesNotExistsException
 
 class Level:
-    __number = None
-    __map = None
+    __map = Map()
 
     def __init__(self, number=FIRST_LEVEL):
         self.__number = LevelNumber(number)
         self.__bots = BotCollection()
 
-    def load_map(self):
-        self.__map = Map.read(self.__number)
-        return self.__map
+    def load_map(self, players:PlayerCollection):
+        map_data = MapDataReader.read(self.__number)
+        for y,row in enumerate(map_data):
+            self.__map.add_row()
+            for x,object_type in enumerate(row):
+                map_object = MapObjectFactory.create(object_type, x, y)
+                self.__map[y].add(map_object)
 
-    def load_bots(self):
-        if self.__map is None:
-            raise MapDoesNotExistsException()
-        from models.game.level.map.MapObjectChar import MapObjectChar
-        for bot_tank in self.__map.bot_tanks[MapObjectChar.BOT_TANK.value]:
-            bot = BotFactory.create(bot_tank)
-            self.__bots.add(bot)
-            self.__map.add_object(bot.tank)
+                if object_type is MapObjectType.PLAYER_ONE and len(players):
+                    players[0].add_tank(map_object)
+                elif object_type is MapObjectType.PLAYER_TWO and len(players) > 1:
+                    players[1].add_tank(map_object)
+                elif object_type is MapObjectType.BOT_TANK:
+                    bot = BotFactory.create(map_object)
+                    self.__bots.add(bot)
 
     @property
     def map(self):
-        if self.__map is None:
-            raise MapDoesNotExistsException()
         return self.__map
     
     @property
