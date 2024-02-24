@@ -1,4 +1,4 @@
-from generic.Size import Size
+from models.generic.Size import Size
 
 MAP_WIDTH = 10
 MAP_HEIGHT = 10
