@@ -7,8 +7,9 @@ from models.game.factories.LevelFactory import LevelFactory
 
 from models.game.collections.PlayerCollection import PlayerCollection
 
-from constants.game import *
-from exceptions.game import *
+from constants.game import MAX_PLAYERS
+from constants.text import TO_STRING_GAME
+from exceptions.game import LevelDoesNotExistsException
 
 class Game(Singleton):
     __level = None
@@ -44,4 +45,4 @@ class Game(Singleton):
         return self.__players
     
     def __str__(self):
-        return TO_STRING % (self.__players, self.__level.number, self.__level.map, self.__level.bots)
+        return TO_STRING_GAME % (self.__players, self.__level)

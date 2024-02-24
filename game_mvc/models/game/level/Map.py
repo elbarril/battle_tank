@@ -16,7 +16,7 @@ class Map(MapMatrix):
     def is_valid_position(self, position:MapObjectPosition):
         if not isinstance(position, MapObjectPosition):
             raise Exception()
-        return position.x + position.y >= 0 and position.y in self and position.x in self[position.y]
+        return position.x >=0 and position.y >= 0 and position.y < len(self) and position.x < len(self[position.y])
     
     def collision(self, position:MapObjectPosition):
         if not isinstance(position, MapObjectPosition):

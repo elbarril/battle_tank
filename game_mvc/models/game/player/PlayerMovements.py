@@ -1,7 +1,7 @@
 from models.game.level.map.MovableMapObjectDirection import MovableMapObjectDirections
 
 class PlayerMovements:
-    __movements = {
+    __movements:dict[int, tuple[tuple[str,MovableMapObjectDirections]]] = {
         1: (
             ("up", MovableMapObjectDirections.UP),
             ("down", MovableMapObjectDirections.DOWN),
@@ -17,5 +17,7 @@ class PlayerMovements:
     }
 
     @classmethod
-    def get(self, player_number):
+    def get(self, player_number:int):
+        if not (isinstance(player_number, int) and player_number in self.__movements):
+            raise Exception("Wrong player number.")
         return self.__movements[player_number]

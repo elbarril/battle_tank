@@ -1,1 +1,0 @@
-TO_STRING = "tank at position: %s."

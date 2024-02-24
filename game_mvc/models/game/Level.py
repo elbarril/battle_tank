@@ -1,4 +1,3 @@
-
 from models.game.factories.BotFactory import BotFactory
 from models.game.collections.BotCollection import BotCollection
 from models.game.collections.PlayerCollection import PlayerCollection
@@ -8,7 +7,8 @@ from models.game.level.LevelNumber import LevelNumber
 from models.game.level.Map import Map
 
 from models.game.level.map.factories.MapObjectFactory import MapObjectFactory, MapObjectType
-from constants.level import TO_STRING, FIRST_LEVEL
+from constants.level import FIRST_LEVEL
+from constants.text import TO_STRING_LEVEL
 
 class Level:
     __map = Map()
@@ -46,4 +46,4 @@ class Level:
         return self.__number
 
     def __str__(self):
-        return TO_STRING % str(self.__number)
+        return TO_STRING_LEVEL % str(self.__number)

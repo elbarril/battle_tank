@@ -1,7 +1,7 @@
 from models.game.player.AbstractPlayer import AbstractPlayer
 from models.game.player.PlayerTank import PlayerTank
-from models.game.level.map.MapObjectType import MapObjectType
-from constants.player import *
+
+from constants.text import TO_STRING_PLAYER 
 from exceptions.player import *
 
 class Player(AbstractPlayer):
@@ -13,4 +13,4 @@ class Player(AbstractPlayer):
         super().add_tank(tank)
 
     def __str__(self):
-        return TO_STRING % self.number
+        return TO_STRING_PLAYER % self.number
