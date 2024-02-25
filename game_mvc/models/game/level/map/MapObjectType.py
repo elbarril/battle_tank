@@ -9,5 +9,5 @@ class MapObjectType(Enum):
 
     def __init__(self, object_char:str):
         if not isinstance(object_char, str):
-            raise Exception()
+            return Exception()
         super().__init__(object_char)

@@ -9,7 +9,7 @@ class MapFilePath(PathLike):
 
     def __init__(self, level_number, level_maps_path=MAPS_PATH, level_maps_filename_prefix=MAPS_FILENAME_PREFIX, level_maps_file_extension=MAPS_FILE_EXTENSION):
         if not str(level_number) in self.__LEVEL_MAP_NUMBERS:
-            raise NonExistentMapLevelNumber()
+            return NonExistentMapLevelNumber()
         self.__file_path = level_maps_path + ((level_maps_filename_prefix + "%s" + level_maps_file_extension) % level_number)
 
     @classmethod

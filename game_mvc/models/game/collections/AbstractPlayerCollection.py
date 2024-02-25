@@ -7,7 +7,7 @@ from exceptions.game import *
 class AbstractPlayerCollection(Collection, ABC):
     def add(self, player):
         if not isinstance(player, AbstractPlayer):
-            raise NotPlayerInstanceException()
+            return NotPlayerInstanceException()
         super().add(player)
         return player
     

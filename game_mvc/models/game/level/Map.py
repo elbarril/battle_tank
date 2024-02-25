@@ -15,20 +15,20 @@ class Map(MapMatrix):
 
     def is_valid_position(self, position:MapObjectPosition):
         if not isinstance(position, MapObjectPosition):
-            raise Exception()
+            return Exception()
         return position.x >=0 and position.y >= 0 and position.y < len(self) and position.x < len(self[position.y])
     
     def collision(self, position:MapObjectPosition):
         if not isinstance(position, MapObjectPosition):
-            raise Exception()
+            return Exception()
         return self[position.y][position.x].is_solid
     
     def remove_object(self, object:MapObject):
         if not isinstance(object, MapObject):
-            raise Exception()
+            return Exception()
         self[object.position.y][object.position.x] = MapObjectFactory.create(MapObjectType.FLUID, object.position.x, object.position.y)
 
     def add_object(self, object:MapObject):
         if not isinstance(object, MapObject):
-            raise Exception()
+            return Exception()
         self[object.position.y][object.position.x] = object

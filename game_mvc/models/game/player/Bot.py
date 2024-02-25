@@ -2,8 +2,8 @@ from models.game.player.AbstractPlayer import AbstractPlayer
 from constants.text import TO_STRING_BOT
 
 class Bot(AbstractPlayer):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, tank):
+        super().__init__(tank=tank)
         self.is_bot = True
 
     def add_tank(self, tank):

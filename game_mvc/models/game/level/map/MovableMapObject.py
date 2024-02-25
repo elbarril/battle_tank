@@ -10,7 +10,7 @@ class MovableMapObject(MapObject, ABC):
     def __init__(self,  position, direction=MovableMapObjectDirections.UP):
         super().__init__(position)
         if not isinstance(direction, MapObjectDirection):
-            raise WrongDirectionDataException()
+            return WrongDirectionDataException()
         self.__direction = direction
 
     @property
@@ -20,7 +20,7 @@ class MovableMapObject(MapObject, ABC):
     @direction.setter
     def direction(self, direction):
         if not isinstance(direction, MapObjectDirection):
-            raise WrongDirectionDataException()
+            return WrongDirectionDataException()
         self.__direction = direction
 
     def move(self, position):

@@ -1,4 +1,5 @@
 import keyboard
+from string import digits
 from models.game.level.Map import Map
 
 class GameConsoleView:

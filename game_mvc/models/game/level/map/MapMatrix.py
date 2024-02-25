@@ -8,12 +8,12 @@ class MapMatrixRow(Collection):
 
     def add(self, object):
         if not isinstance(object, MapObject):
-            raise Exception()
+            return Exception()
         return super().add(object)
     
     def __setitem__(self, index, object):
         if not isinstance(object, MapObject):
-            raise Exception()
+            return Exception()
         super().__setitem__(index,object)
     
     def __getitem__(self, index) -> MapObject:

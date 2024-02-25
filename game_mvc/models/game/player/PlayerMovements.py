@@ -19,5 +19,5 @@ class PlayerMovements:
     @classmethod
     def get(self, player_number:int):
         if not (isinstance(player_number, int) and player_number in self.__movements):
-            raise Exception("Wrong player number.")
+            return Exception(f"Wrong player number. {player_number} is {type(player_number)}")
         return self.__movements[player_number]

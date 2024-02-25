@@ -1,8 +1,8 @@
-
-
-class GameState:
+from enum import Enum
+class GameState(Enum):
     STARTED = 0
-    ONE_PLAYER_READY = 1
-    TWO_PLAYERS_READY = 2
-    ONE_PLAYER_PLAYING = 3
-    TWO_PLAYERS_PLAYING = 4
+    PLAYERS_READY = 1
+    LEVEL_READY = 2
+    PLAYING = 3
+    PAUSED = 4
+    GAME_OVER = 5

@@ -4,15 +4,19 @@ from views.GameConsoleView import GameConsoleView
 from models.game.level.map.MovableMapObject import MovableMapObject
 from models.game.level.map.MovableMapObjectDirection import MapObjectDirection
 
+from utils.functions import handle_exception
+
 class GameController:
     def __init__(self, model:Game, view:GameConsoleView):
         self.model = model
         self.view = view
 
+    @handle_exception
     def run(self):
-        self.model.new_player()
+        self.model.create_players()
         level = self.model.new_level()
-        
+        self.model.play_level()
+    
         self.view.show_map(level.map)
         events = [(key, lambda movable=player.tank,direction=direction:self.move_object(movable, direction)) for player in self.model.players for key,direction in player.movements]
 
@@ -21,9 +25,9 @@ class GameController:
 
     def move_object(self, movable:MovableMapObject, direction):
         if not isinstance(movable, MovableMapObject):
-            raise Exception(f"Object {movable} cannot move.")
+            return Exception(f"Object {movable} cannot move.")
         if not isinstance(direction, MapObjectDirection):
-            raise Exception("Wrong direction.")
+            return Exception("Wrong direction.")
         next_position = movable.position + direction
         map = self.model.level.map
         if not map.is_valid_position(next_position): return

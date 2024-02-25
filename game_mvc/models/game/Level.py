@@ -1,37 +1,47 @@
 from models.game.factories.BotFactory import BotFactory
 from models.game.collections.BotCollection import BotCollection
-from models.game.collections.PlayerCollection import PlayerCollection
+from models.game.player.Player import Player
 
 from models.game.level.MapDataReader import MapDataReader
 from models.game.level.LevelNumber import LevelNumber
 from models.game.level.Map import Map
 
 from models.game.level.map.factories.MapObjectFactory import MapObjectFactory, MapObjectType
-from constants.level import FIRST_LEVEL
 from constants.text import TO_STRING_LEVEL
 
 class Level:
-    __map = Map()
-
-    def __init__(self, number=FIRST_LEVEL):
+    def __init__(self, number):
+        self.__map = Map()
         self.__number = LevelNumber(number)
         self.__bots = BotCollection()
+        self.__player_one_tank = None
+        self.__player_two_tank = None
 
-    def load_map(self, players:PlayerCollection):
+    def load_map(self):
         map_data = MapDataReader.read(self.__number)
         for y,row in enumerate(map_data):
             self.__map.add_row()
             for x,object_type in enumerate(row):
                 map_object = MapObjectFactory.create(object_type, x, y)
-                self.__map[y].add(map_object)
+                if object_type in [MapObjectType.PLAYER_ONE, MapObjectType.PLAYER_TWO, MapObjectType.BOT_TANK]:
+                    if object_type is MapObjectType.PLAYER_ONE:
+                        self.__player_one_tank = map_object
+                    elif object_type is MapObjectType.PLAYER_TWO:
+                        self.__player_two_tank = map_object
+                    elif object_type is MapObjectType.BOT_TANK:
+                        bot = BotFactory.create(map_object)
+                        self.__bots.add(bot)
+                    self.__map[y].add(MapObjectFactory.create_empty(x, y))
+                else:
+                    self.__map[y].add(map_object)
 
-                if object_type is MapObjectType.PLAYER_ONE and len(players):
-                    players[0].add_tank(map_object)
-                elif object_type is MapObjectType.PLAYER_TWO and len(players) > 1:
-                    players[1].add_tank(map_object)
-                elif object_type is MapObjectType.BOT_TANK:
-                    bot = BotFactory.create(map_object)
-                    self.__bots.add(bot)
+    @property
+    def player_tank_one(self):
+        return self.__player_one_tank
+
+    @property
+    def player_tank_two(self):
+        return self.__player_two_tank
 
     @property
     def map(self):

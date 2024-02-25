@@ -27,13 +27,13 @@ class MapObjectFactory(Factory):
     @classmethod
     def create(cls, object_type, x, y) -> MapObject:
         if not object_type in cls.__map_object_classes:
-            raise NotMappedMapObjectTypeException()
+            return NotMappedMapObjectTypeException()
         object_class = cls.__map_object_classes.get(object_type)
         if object_class:
             position = MapObjectPosition(x, y)
             return cls._create(object_class, position)
         
     @classmethod
-    def create_empty(cls, position):
-        object_class = cls.__map_object_classes.get(MapObjectType.FLUID.value)
-        return cls._create(object_class, position)
+    def create_empty(cls, x, y):
+        object_class = cls.__map_object_classes.get(MapObjectType.FLUID)
+        return cls._create(object_class, MapObjectPosition(x, y))

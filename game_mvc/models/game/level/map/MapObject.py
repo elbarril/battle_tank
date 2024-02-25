@@ -9,9 +9,9 @@ class MapObject(ABC):
 
     def __init__(self, position:MapObjectPosition, size=MapObjectSize(1,1)):
         if not isinstance(position, MapObjectPosition):
-            raise Exception("Wrong type")
+            return Exception("Wrong type")
         if not isinstance(size, MapObjectSize):
-            raise Exception("Wrong type")
+            return Exception("Wrong type")
         self.__position = position
         self.__size = size
     
@@ -22,7 +22,7 @@ class MapObject(ABC):
     @is_solid.setter
     def is_solid(self, is_solid):
         if not isinstance(is_solid, bool):
-            raise Exception("Wrong type")
+            return Exception("Wrong type")
         self.__is_solid = is_solid
 
     @property
@@ -32,7 +32,7 @@ class MapObject(ABC):
     @symbol.setter
     def symbol(self, symbol):
         if not isinstance(symbol, str):
-            raise Exception("Wrong type")
+            return Exception("Wrong type")
         self.__symbol = symbol
 
     @property
@@ -42,7 +42,7 @@ class MapObject(ABC):
     @position.setter
     def position(self, position):
         if not isinstance(position, MapObjectPosition):
-            raise Exception("Wrong type")
+            return Exception("Wrong type")
         self.__position = position
 
     @property
@@ -52,7 +52,7 @@ class MapObject(ABC):
     @size.setter
     def size(self, size):
         if not isinstance(size, MapObjectSize):
-            raise Exception("Wrong type")
+            return Exception("Wrong type")
         self.__size = size
 
     def __str__(self):

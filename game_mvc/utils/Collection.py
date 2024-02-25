@@ -8,7 +8,7 @@ class Collection(ABC):
     @abstractmethod
     def add(self, object):
         if self.__max_items and len(self) == self.__max_items:
-            raise Exception(f"Max items {object} exceeded in {self}.")
+            return Exception(f"Max items {object} exceeded in {self}.")
         self.__collection.append(object)
     
     def __setitem__(self, index, object):

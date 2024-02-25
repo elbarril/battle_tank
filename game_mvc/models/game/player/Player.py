@@ -5,11 +5,10 @@ from constants.text import TO_STRING_PLAYER
 from exceptions.player import *
 
 class Player(AbstractPlayer):
-    type = None
+    def __init__(self, number):
+        super().__init__(number)
 
     def add_tank(self, tank:PlayerTank):
-        if self.tank:
-            raise PlayerAlreadyHasTankException()
         super().add_tank(tank)
 
     def __str__(self):
