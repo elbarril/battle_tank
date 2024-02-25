@@ -11,8 +11,4 @@ class AbstractPlayer(ABC):
 
     @abstractmethod
     def add_tank(self, tank:Tank):
-        if not isinstance(tank, Tank):
-            return Exception(f"Cannot add {type(tank)} object as a tank.")
-        if self.tank:
-            return Exception(f"Player {self} already has a tank.")
         self.tank = tank

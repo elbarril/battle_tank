@@ -26,10 +26,8 @@ class MapObjectFactory(Factory):
 
     @classmethod
     def create(cls, object_type, x, y) -> MapObject:
-        if not object_type in cls.__map_object_classes:
-            return NotMappedMapObjectTypeException()
-        object_class = cls.__map_object_classes.get(object_type)
-        if object_class:
+        if object_type in cls.__map_object_classes:
+            object_class = cls.__map_object_classes.get(object_type)
             position = MapObjectPosition(x, y)
             return cls._create(object_class, position)
         

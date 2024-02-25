@@ -9,14 +9,11 @@ class GameStateManager:
         return self.__game_state
     
     def __is_valid_state_transition(self, new_state):
-        if not isinstance(new_state, GameState):
-            return Exception(f"Wrong game state type {type(new_state)}")
         return new_state in GameState
 
     def set_game_state(self, new_state):
         if not self.__is_valid_state_transition(new_state):
-            return Exception("Not valid state transition")
-        self.__game_state = new_state
+            self.__game_state = new_state
 
     def players_ready(self):
         self.set_game_state(GameState.PLAYERS_READY)

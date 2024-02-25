@@ -1,6 +1,5 @@
 from models.game.factories.BotFactory import BotFactory
 from models.game.collections.BotCollection import BotCollection
-from models.game.player.Player import Player
 
 from models.game.level.MapDataReader import MapDataReader
 from models.game.level.LevelNumber import LevelNumber

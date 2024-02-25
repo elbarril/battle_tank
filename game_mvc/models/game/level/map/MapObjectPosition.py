@@ -1,21 +1,15 @@
-from exceptions.position import *
-
 class MapObjectPosition:
     def __init__(self, x, y):
-        if not (isinstance(x, int) and isinstance(y, int)):
-            return WrongPositionValueTypeException()
         self.x = x
         self.y = y
 
     def __eq__(self, other):
-        if not isinstance(other, MapObjectPosition):
-            return NotPositionTypeException()
-        return self.x == other.x and self.y == other.y
+        if isinstance(other, MapObjectPosition):
+            return self.x == other.x and self.y == other.y
 
     def __str__(self):
         return str(self.x) + str(self.y)
     
     def __radd__(self, other):
-        if not isinstance(other, MapObjectPosition):
-            return NotPositionTypeException()
-        return MapObjectPosition(other.x + self.x, other.y + self.y)
+        if isinstance(other, MapObjectPosition):
+            return MapObjectPosition(other.x + self.x, other.y + self.y)

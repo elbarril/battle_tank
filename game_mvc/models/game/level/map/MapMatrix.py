@@ -7,13 +7,9 @@ class MapMatrixRow(Collection):
         super().__init__(map_width)
 
     def add(self, object):
-        if not isinstance(object, MapObject):
-            return Exception()
         return super().add(object)
     
     def __setitem__(self, index, object):
-        if not isinstance(object, MapObject):
-            return Exception()
         super().__setitem__(index,object)
     
     def __getitem__(self, index) -> MapObject:
@@ -27,8 +23,6 @@ class MapMatrix(Collection):
         super().__init__(height)
 
     def add(self, row):
-        if not isinstance(row, MapMatrixRow):
-            Exception()
         return super().add(row)
     
     def __getitem__(self, index) -> MapMatrixRow:

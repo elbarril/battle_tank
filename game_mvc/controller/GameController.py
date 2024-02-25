@@ -11,23 +11,21 @@ class GameController:
         self.model = model
         self.view = view
 
-    @handle_exception
     def run(self):
         self.model.create_players()
         level = self.model.new_level()
         self.model.play_level()
-    
+        self.set_players_movement_events()
         self.view.show_map(level.map)
-        events = [(key, lambda movable=player.tank,direction=direction:self.move_object(movable, direction)) for player in self.model.players for key,direction in player.movements]
-
-        self.view.listen_keyboard(events)
         self.view.loop()
 
-    def move_object(self, movable:MovableMapObject, direction):
-        if not isinstance(movable, MovableMapObject):
-            return Exception(f"Object {movable} cannot move.")
-        if not isinstance(direction, MapObjectDirection):
-            return Exception("Wrong direction.")
+    def set_players_movement_events(self):
+        for player in self.model.players:
+            for key, direction in player.movements:
+                event = lambda m=player.tank,d=direction:self.move_object(m, d)
+                self.view.listen_keyboard(key, event)
+
+    def move_object(self, movable:MovableMapObject, direction:MapObjectDirection):
         next_position = movable.position + direction
         map = self.model.level.map
         if not map.is_valid_position(next_position): return

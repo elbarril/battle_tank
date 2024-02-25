@@ -4,23 +4,18 @@ from models.game.level.map.MovableMapObjectDirection import (
     MapObjectDirection,
     MovableMapObjectDirections
 )
-from exceptions.map import *
 
 class MovableMapObject(MapObject, ABC):
     def __init__(self,  position, direction=MovableMapObjectDirections.UP):
         super().__init__(position)
-        if not isinstance(direction, MapObjectDirection):
-            return WrongDirectionDataException()
         self.__direction = direction
 
     @property
-    def direction(self):
+    def direction(self) -> MapObjectDirection:
         return self.__direction
     
     @direction.setter
     def direction(self, direction):
-        if not isinstance(direction, MapObjectDirection):
-            return WrongDirectionDataException()
         self.__direction = direction
 
     def move(self, position):

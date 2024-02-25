@@ -1,8 +1,7 @@
 from models.game.player.AbstractPlayer import AbstractPlayer
 from models.game.player.PlayerTank import PlayerTank
 
-from constants.text import TO_STRING_PLAYER 
-from exceptions.player import *
+from constants.text import TO_STRING_PLAYER
 
 class Player(AbstractPlayer):
     def __init__(self, number):

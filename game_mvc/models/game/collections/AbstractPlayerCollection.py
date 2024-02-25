@@ -1,13 +1,9 @@
 from abc import ABC
 from models.game.player.AbstractPlayer import AbstractPlayer
 from utils.Collection import Collection
-from exceptions.player import *
-from exceptions.game import *
 
 class AbstractPlayerCollection(Collection, ABC):
     def add(self, player):
-        if not isinstance(player, AbstractPlayer):
-            return NotPlayerInstanceException()
         super().add(player)
         return player
     
