@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from models.game.map.objects.Tank import Tank
+from models.map.objects.Tank import Tank
 
 class AbstractPlayer(ABC):
     is_bot = None

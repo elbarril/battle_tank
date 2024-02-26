@@ -1,4 +1,4 @@
-from models.game.map.MovableObjectDirection import MovableObjectDirections
+from models.map.MovableObjectDirection import MovableObjectDirections
 
 class PlayerMovements:
     __movements:dict[int, tuple[tuple[str,MovableObjectDirections]]] = {

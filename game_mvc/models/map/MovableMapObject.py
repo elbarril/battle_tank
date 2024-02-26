@@ -1,7 +1,7 @@
 from abc import ABC
 
-from models.game.map.MapObject import MapObject
-from models.game.map.MovableObjectDirection import (
+from models.map.MapObject import MapObject
+from models.map.MovableObjectDirection import (
     MovableObjectDirection,
     MovableObjectDirections
 )

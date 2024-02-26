@@ -1,5 +1,5 @@
 import keyboard
-from models.game.Map import Map
+from models.map.Map import Map
 
 class GameConsoleView:
     def show(self, *args):
@@ -12,6 +12,9 @@ class GameConsoleView:
 
     def listen_keyboard(self, key, event):
         keyboard.add_hotkey(key, event)
+
+    def shut_keyboard(self, key):
+        keyboard.remove_hotkey(key)
 
     def loop(self):
         keyboard.wait("esc")

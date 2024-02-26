@@ -1,4 +1,4 @@
-from models.game.map.MapObject import MapObject
+from models.map.MapObject import MapObject
     
 class SolidMapObject(MapObject):
     def __init__(self, *args, **kwargs):

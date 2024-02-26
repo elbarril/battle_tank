@@ -1,10 +1,10 @@
-from models.game.map.MapSize import MapSize
-from models.game.map.MapObject import MapObject
-from models.game.map.MapObjectType import MapObjectType
-from models.game.map.MapObjectPosition import MapObjectPosition
-from models.game.map.MapMatrix import MapMatrix
+from models.map.MapSize import MapSize
+from models.map.MapObject import MapObject
+from models.map.MapObjectType import MapObjectType
+from models.map.MapObjectPosition import MapObjectPosition
+from models.map.MapMatrix import MapMatrix
 
-from models.game.factories.MapObjectFactory import MapObjectFactory
+from models.factories.MapObjectFactory import MapObjectFactory
 
 class Map(MapMatrix):
     def __init__(self, map_size:MapSize=MapSize()):

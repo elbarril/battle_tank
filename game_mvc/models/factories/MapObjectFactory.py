@@ -1,11 +1,11 @@
-from models.game.map.MapObject import MapObject
-from models.game.map.MapObjectType import MapObjectType
-from models.game.map.MapObjectPosition import MapObjectPosition
+from models.map.MapObject import MapObject
+from models.map.MapObjectType import MapObjectType
+from models.map.MapObjectPosition import MapObjectPosition
 
-from models.game.map.objects.FluidMapObject import FluidMapObject
-from models.game.map.objects.SolidMapObject import SolidMapObject
-from models.game.map.objects.PlayerTank import PlayerTank
-from models.game.map.objects.BotTank import BotTank
+from models.map.objects.FluidMapObject import FluidMapObject
+from models.map.objects.SolidMapObject import SolidMapObject
+from models.map.objects.PlayerTank import PlayerTank
+from models.map.objects.BotTank import BotTank
 
 from utils.Factory import Factory
 

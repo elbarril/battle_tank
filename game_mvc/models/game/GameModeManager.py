@@ -1,4 +1,4 @@
-from models.GameMode import GameMode
+from models.game.GameMode import GameMode
 
 class GameModeManager:
     def __init__(self):

@@ -1,7 +1,7 @@
-from models.game.collections.AbstractPlayerCollection import AbstractPlayerCollection
-from models.game.player.Bot import Bot
+from utils.Collection import Collection
+from models.player.Bot import Bot
 
-class BotCollection(AbstractPlayerCollection):
+class BotCollection(Collection):
     def add(self, bot):
         return super().add(bot)
 

@@ -1,8 +1,8 @@
-from models.Game import Game
+from models.game.Game import Game
 from views.GameConsoleView import GameConsoleView
 
-from models.game.map.MovableMapObject import MovableMapObject
-from models.game.map.MovableObjectDirection import MovableObjectDirection
+from models.map.MovableMapObject import MovableMapObject
+from models.map.MovableObjectDirection import MovableObjectDirection
 
 from utils.functions import handle_exception
 
@@ -13,14 +13,17 @@ class GameController:
 
     def run(self):
         self.view.listen_keyboard("space", self.__play)
-        self.view.listen_keyboard("p", self.__toggle_mode)
+        self.view.listen_keyboard("m", self.__toggle_mode)
+        self.view.show("Mode:", self.model.mode, "players")
         self.view.loop()
 
     def __toggle_mode(self):
         self.model.toggle_players_mode()
-        self.view.show("Mode ", self.model.mode)
+        self.view.show("Mode:", self.model.mode, "players")
     
     def __play(self):
+        self.view.shut_keyboard("space")
+        self.view.shut_keyboard("m")
         self.model.new_level()
         self.model.create_players()
         self.__set_players_movement_events()

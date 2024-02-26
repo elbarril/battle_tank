@@ -1,13 +1,13 @@
 from utils.Singleton import Singleton
 
-from models.game.factories.PlayerFactory import PlayerFactory
-from models.game.factories.LevelFactory import LevelFactory
+from models.factories.PlayerFactory import PlayerFactory
+from models.factories.LevelFactory import LevelFactory
 
 from constants.text import TO_STRING_GAME
 from constants.game import FIRST_LEVEL
 
-from models.GameStateManager import GameStateManager
-from models.GameModeManager import GameModeManager
+from models.game.GameStateManager import GameStateManager
+from models.game.GameModeManager import GameModeManager
 
 class Game(Singleton):
     __player_one = None

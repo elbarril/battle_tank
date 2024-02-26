@@ -1,9 +1,9 @@
 import csv
 
-from models.game.level.LevelNumber import LevelNumber
+from models.level.LevelNumber import LevelNumber
 
-from models.game.map.MapFilePath import MapFilePath
-from models.game.map.MapObjectType import MapObjectType
+from models.map.MapFilePath import MapFilePath
+from models.map.MapObjectType import MapObjectType
 
 class MapDataReader:
     @classmethod

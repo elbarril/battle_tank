@@ -1,6 +1,6 @@
 from utils.Factory import Factory
-from models.game.player.Player import Player
-from models.game.player.PlayerMovements import PlayerMovements
+from models.player.Player import Player
+from models.player.PlayerMovements import PlayerMovements
 
 class PlayerFactory(Factory):
     @classmethod

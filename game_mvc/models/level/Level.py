@@ -1,15 +1,15 @@
-from models.game.Map import Map
-from models.game.MapDataReader import MapDataReader
+from models.map.Map import Map
+from models.map.MapDataReader import MapDataReader
 
-from models.game.factories.BotFactory import BotFactory
-from models.game.factories.MapObjectFactory import MapObjectFactory
+from models.factories.BotFactory import BotFactory
+from models.factories.MapObjectFactory import MapObjectFactory
 
-from models.game.collections.BotCollection import BotCollection
+from models.collections.BotCollection import BotCollection
 
-from models.game.level.LevelNumber import LevelNumber
+from models.level.LevelNumber import LevelNumber
 
-from models.game.map.MapObject import MapObject
-from models.game.map.MapObjectType import MapObjectType
+from models.map.MapObject import MapObject
+from models.map.MapObjectType import MapObjectType
 
 from constants.text import TO_STRING_LEVEL
 

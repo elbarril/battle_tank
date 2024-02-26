@@ -1,4 +1,4 @@
-from models.game.map.MovableMapObject import MovableMapObject
+from models.map.MovableMapObject import MovableMapObject
 
 from constants.text import TO_STRING_TANK
 

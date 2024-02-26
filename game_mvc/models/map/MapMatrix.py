@@ -1,6 +1,6 @@
-from models.game.map.MapObject import MapObject
-from models.game.map.MapObjectPosition import MapObjectPosition
-from models.game.map.MapSize import MapSize
+from models.map.MapObject import MapObject
+from models.map.MapObjectPosition import MapObjectPosition
+from models.map.MapSize import MapSize
 
 class MapMatrix:
     def __init__(self, size:MapSize):
