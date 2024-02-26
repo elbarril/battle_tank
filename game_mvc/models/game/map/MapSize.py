@@ -1,7 +1,7 @@
-from abc import ABC
+from constants.map import MAP_WIDTH, MAP_HEIGHT
 
-class Size(ABC):
-    def __init__(self, width:int, height:int):
+class MapSize:
+    def __init__(self, width=MAP_WIDTH, height=MAP_HEIGHT):
         self.__width = width
         self.__height = height
 

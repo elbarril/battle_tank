@@ -1,15 +1,28 @@
+from models.game.Map import Map
+from models.game.MapDataReader import MapDataReader
+
 from models.game.factories.BotFactory import BotFactory
+from models.game.factories.MapObjectFactory import MapObjectFactory
+
 from models.game.collections.BotCollection import BotCollection
 
-from models.game.level.MapDataReader import MapDataReader
 from models.game.level.LevelNumber import LevelNumber
-from models.game.level.Map import Map
 
-from models.game.level.map.factories.MapObjectFactory import MapObjectFactory, MapObjectType
+from models.game.map.MapObject import MapObject
+from models.game.map.MapObjectType import MapObjectType
+
 from constants.text import TO_STRING_LEVEL
 
 class Level:
     def __init__(self, number):
+        self.__object_handler = {
+            MapObjectType.PLAYER_ONE: self.__set_player_one_tank,
+            MapObjectType.PLAYER_TWO: self.__set_player_two_tank,
+            MapObjectType.BOT_TANK: self.__create_bot,
+            MapObjectType.SOLID: self.__add_object_to_map,
+            MapObjectType.FLUID: self.__add_object_to_map
+        }
+
         self.__map = Map()
         self.__number = LevelNumber(number)
         self.__bots = BotCollection()
@@ -18,28 +31,47 @@ class Level:
 
     def load_map(self):
         map_data = MapDataReader.read(self.__number)
-        for y,row in enumerate(map_data):
-            self.__map.add_row()
-            for x,object_type in enumerate(row):
+        for y, row in enumerate(map_data):
+            for x, object_type in enumerate(row):
                 map_object = MapObjectFactory.create(object_type, x, y)
-                if object_type in [MapObjectType.PLAYER_ONE, MapObjectType.PLAYER_TWO, MapObjectType.BOT_TANK]:
-                    if object_type is MapObjectType.PLAYER_ONE:
-                        self.__player_one_tank = map_object
-                    elif object_type is MapObjectType.PLAYER_TWO:
-                        self.__player_two_tank = map_object
-                    elif object_type is MapObjectType.BOT_TANK:
-                        bot = BotFactory.create(map_object)
-                        self.__bots.add(bot)
-                    self.__map[y].add(MapObjectFactory.create_empty(x, y))
-                else:
-                    self.__map[y].add(map_object)
+                object_handler = self.__object_handler[object_type]
+                object_handler(map_object)
+
+    def __add_fluid_to_map(self, position):
+        self.__add_object_to_map(MapObjectFactory.create(MapObjectType.FLUID, position.x, position.y))
+
+    def __set_player_one_tank(self, tank):
+        self.__player_one_tank = tank
+        self.__add_fluid_to_map(tank.position)
+
+    def __set_player_two_tank(self, tank):
+        self.__player_two_tank = tank
+        self.__add_fluid_to_map(tank.position)
+
+    def __create_bot(self, tank):
+        bot = BotFactory.create(tank)
+        self.__bots.add(bot)
+        self.__add_fluid_to_map(tank.position)
+
+    def __add_object_to_map(self, object:MapObject):
+        self.__map[object.position] = object
+
+    def load_player_one(self):
+        self.__add_object_to_map(self.__player_one_tank)
+
+    def load_player_two(self):
+        self.__add_object_to_map(self.__player_two_tank)
+
+    def load_bots(self):
+        for bot in self.__bots:
+            self.__add_object_to_map(bot.tank)
 
     @property
-    def player_tank_one(self):
+    def player_one_tank(self):
         return self.__player_one_tank
 
     @property
-    def player_tank_two(self):
+    def player_two_tank(self):
         return self.__player_two_tank
 
     @property

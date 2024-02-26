@@ -1,8 +1,12 @@
-from models.game.GameMode import GameMode
+from models.GameMode import GameMode
 
 class GameModeManager:
     def __init__(self):
         self.__game_mode = GameMode.ONE_PLAYER
+
+    @property
+    def mode_value(self):
+        return self.__game_mode.value
     
     def __is_valid_mode_transition(self, new_mode):
         return new_mode in GameMode

@@ -2,6 +2,9 @@ from models.game.collections.AbstractPlayerCollection import AbstractPlayerColle
 from models.game.player.Bot import Bot
 
 class BotCollection(AbstractPlayerCollection):
+    def add(self, bot):
+        return super().add(bot)
+
     def __next__(self) -> Bot:
         return super().__next__()
     

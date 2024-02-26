@@ -1,17 +1,18 @@
 from abc import ABC
-from models.game.level.map.MapObject import MapObject
-from models.game.level.map.MovableMapObjectDirection import (
-    MapObjectDirection,
-    MovableMapObjectDirections
+
+from models.game.map.MapObject import MapObject
+from models.game.map.MovableObjectDirection import (
+    MovableObjectDirection,
+    MovableObjectDirections
 )
 
 class MovableMapObject(MapObject, ABC):
-    def __init__(self,  position, direction=MovableMapObjectDirections.UP):
+    def __init__(self,  position, direction=MovableObjectDirections.UP):
         super().__init__(position)
         self.__direction = direction
 
     @property
-    def direction(self) -> MapObjectDirection:
+    def direction(self) -> MovableObjectDirection:
         return self.__direction
     
     @direction.setter

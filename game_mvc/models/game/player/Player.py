@@ -1,5 +1,6 @@
 from models.game.player.AbstractPlayer import AbstractPlayer
-from models.game.player.PlayerTank import PlayerTank
+
+from models.game.map.objects.PlayerTank import PlayerTank
 
 from constants.text import TO_STRING_PLAYER
 

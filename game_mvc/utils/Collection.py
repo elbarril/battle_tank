@@ -1,20 +1,18 @@
 from abc import ABC, abstractmethod
 
 class Collection(ABC):
-    def __init__(self, max_items=None):
+    def __init__(self):
         self.__collection = []
-        self.__max_items = max_items
 
     @abstractmethod
-    def add(self, object):
-        if self.__max_items and len(self) < self.__max_items:
-            self.__collection.append(object)
-    
-    def __setitem__(self, index, object):
-        self.__collection[index] = object
+    def add(self, item):
+        self.__collection.append(item)
     
     def clear(self):
         self.__collection = []
+    
+    def __setitem__(self, index, item):
+        self.__collection[index] = item
 
     def __tuple__(self):
         return tuple(self.__collection)

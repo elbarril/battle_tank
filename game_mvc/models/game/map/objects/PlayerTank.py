@@ -1,4 +1,4 @@
-from models.game.player.Tank import Tank
+from models.game.map.objects.Tank import Tank
 
 class PlayerTank(Tank):
     def __init__(self, *args, **kwargs):

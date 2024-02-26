@@ -1,4 +1,5 @@
-from models.game.level.map.MovableMapObject import MovableMapObject
+from models.game.map.MovableMapObject import MovableMapObject
+
 from constants.text import TO_STRING_TANK
 
 class Tank(MovableMapObject):

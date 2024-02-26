@@ -1,4 +1,4 @@
-from models.game.GameState import GameState
+from models.GameState import GameState
 
 class GameStateManager:
     def __init__(self):

@@ -1,18 +1,18 @@
-from models.game.level.map.MovableMapObjectDirection import MovableMapObjectDirections
+from models.game.map.MovableObjectDirection import MovableObjectDirections
 
 class PlayerMovements:
-    __movements:dict[int, tuple[tuple[str,MovableMapObjectDirections]]] = {
+    __movements:dict[int, tuple[tuple[str,MovableObjectDirections]]] = {
         1: (
-            ("up", MovableMapObjectDirections.UP),
-            ("down", MovableMapObjectDirections.DOWN),
-            ("left", MovableMapObjectDirections.LEFT),
-            ("right", MovableMapObjectDirections.RIGHT),
+            ("up", MovableObjectDirections.UP),
+            ("down", MovableObjectDirections.DOWN),
+            ("left", MovableObjectDirections.LEFT),
+            ("right", MovableObjectDirections.RIGHT),
         ),
         2: (
-            ("w", MovableMapObjectDirections.UP),
-            ("s", MovableMapObjectDirections.DOWN),
-            ("a", MovableMapObjectDirections.LEFT),
-            ("d", MovableMapObjectDirections.RIGHT),
+            ("w", MovableObjectDirections.UP),
+            ("s", MovableObjectDirections.DOWN),
+            ("a", MovableObjectDirections.LEFT),
+            ("d", MovableObjectDirections.RIGHT),
         )
     }
 

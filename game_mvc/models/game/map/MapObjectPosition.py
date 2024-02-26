@@ -1,7 +1,18 @@
 class MapObjectPosition:
     def __init__(self, x, y):
-        self.x = x
-        self.y = y
+        self.__x = x
+        self.__y = y
+
+    @property
+    def x(self):
+        return self.__x
+
+    @property
+    def y(self):
+        return self.__y
+    
+    def __iter__(self):
+        return iter((self.__x, self.__y))
 
     def __eq__(self, other):
         if isinstance(other, MapObjectPosition):

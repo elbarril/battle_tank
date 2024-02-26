@@ -1,4 +1,5 @@
 from models.game.player.AbstractPlayer import AbstractPlayer
+
 from constants.text import TO_STRING_BOT
 
 class Bot(AbstractPlayer):

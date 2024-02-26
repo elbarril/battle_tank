@@ -1,4 +1,5 @@
 from enum import Enum
+
 class GameState(Enum):
     STARTED = 0
     PLAYERS_READY = 1

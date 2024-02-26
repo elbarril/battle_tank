@@ -1,6 +1,8 @@
 from abc import ABC
-from models.game.level.map.MapObjectPosition import MapObjectPosition
-from models.game.level.map.MapObjectSize import MapObjectSize
+
+from models.game.map.MapObjectPosition import MapObjectPosition
+from models.game.map.MapObjectSize import MapObjectSize
+
 from constants.text import TO_STRING_OBJECT
 
 class MapObject(ABC):
