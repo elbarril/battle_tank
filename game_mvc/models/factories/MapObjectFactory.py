@@ -1,6 +1,6 @@
 from models.map.MapObject import MapObject
 from models.map.MapObjectType import MapObjectType
-from models.map.MapObjectPosition import MapObjectPosition
+from models.map.MapPosition import MapPosition
 
 from models.map.objects.FluidMapObject import FluidMapObject
 from models.map.objects.SolidMapObject import SolidMapObject
@@ -23,5 +23,5 @@ class MapObjectFactory(Factory):
     def create(cls, object_type, x, y) -> MapObject:
         if object_type in cls.__map_object_classes:
             object_class = cls.__map_object_classes.get(object_type)
-            position = MapObjectPosition(x, y)
+            position = MapPosition(x, y)
             return cls._create(object_class, position)

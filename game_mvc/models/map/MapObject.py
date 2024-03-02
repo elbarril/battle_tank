@@ -1,5 +1,6 @@
 from abc import ABC
 
+from models.map.MapPosition import MapPosition
 from models.map.MapObjectPosition import MapObjectPosition
 from models.map.MapObjectSize import MapObjectSize
 
@@ -8,9 +9,10 @@ from constants.text import TO_STRING_OBJECT
 class MapObject(ABC):
     __is_solid = None
     __symbol = None
+    __color = None
 
-    def __init__(self, position:MapObjectPosition, size=MapObjectSize(1,1)):
-        self.__position = position
+    def __init__(self, position:MapPosition, size=MapObjectSize(2,2)):
+        self.__position = MapObjectPosition(position*size)
         self.__size = size
     
     @property
@@ -44,6 +46,14 @@ class MapObject(ABC):
     @size.setter
     def size(self, size):
         self.__size = size
+    
+    @property
+    def color(self):
+        return self.__color
+    
+    @color.setter
+    def color(self, color):
+        self.__color = color
 
     def __str__(self):
         return TO_STRING_OBJECT

@@ -1,15 +1,15 @@
 from models.map.MapObject import MapObject
-from models.map.MapObjectPosition import MapObjectPosition
+from models.map.MapPosition import MapPosition
 from models.map.MapSize import MapSize
 
 class MapMatrix:
     def __init__(self, size:MapSize):
         self.__matrix = [[None for _ in range(size.width)] for _ in range(size.height)]
     
-    def __setitem__(self, position:MapObjectPosition, object:MapObject):
+    def __setitem__(self, position:MapPosition, object:MapObject):
         self.__matrix[position.y][position.x] = object
 
-    def __getitem__(self, position:MapObjectPosition) -> MapObject:
+    def __getitem__(self, position:MapPosition) -> MapObject:
         return self.__matrix[position.y][position.x]
     
     def __iter__(self):

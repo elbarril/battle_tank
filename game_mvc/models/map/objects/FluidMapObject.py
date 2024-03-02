@@ -5,3 +5,4 @@ class FluidMapObject(MapObject):
         super().__init__(*args, **kwargs)
         self.is_solid = False
         self.symbol = ' '
+        self.color = 'white'

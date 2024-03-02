@@ -15,7 +15,7 @@ class GameController:
         self.view.listen_keyboard("space", self.__play)
         self.view.listen_keyboard("m", self.__toggle_mode)
         self.view.show("Mode:", self.model.mode, "players")
-        self.view.loop()
+        self.view.loop("esc")
 
     def __toggle_mode(self):
         self.model.toggle_players_mode()
@@ -41,7 +41,7 @@ class GameController:
         map = self.model.level.map
         if not map.is_valid_position(next_position): return
         movable.direction = direction
-        if map.collision(next_position): return
+        if map.collision(movable, next_position): return
         map.remove_object(movable)
         movable.move(next_position)
         map.add_object(movable)

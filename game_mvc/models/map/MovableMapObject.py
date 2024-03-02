@@ -7,9 +7,19 @@ from models.map.MovableObjectDirection import (
 )
 
 class MovableMapObject(MapObject, ABC):
-    def __init__(self,  position, direction=MovableObjectDirections.UP):
+    def __init__(self,  position, direction=MovableObjectDirections.UP, velocity=1):
         super().__init__(position)
         self.__direction = direction
+        self.__velocity = velocity
+        self.color = 'blue'
+
+    @property
+    def velocity(self):
+        return self.__velocity
+    
+    @velocity.setter
+    def velocity(self, velocity):
+        self.__velocity = velocity
 
     @property
     def direction(self) -> MovableObjectDirection:

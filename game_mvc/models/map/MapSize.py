@@ -1,7 +1,7 @@
-from constants.map import MAP_WIDTH, MAP_HEIGHT
+from constants.map import MAP_WIDTH, MAP_HEIGHT, MAP_POSITION_WIDTH, MAP_POSITION_HEIGHT
 
 class MapSize:
-    def __init__(self, width=MAP_WIDTH, height=MAP_HEIGHT):
+    def __init__(self, width=MAP_WIDTH*MAP_POSITION_WIDTH, height=MAP_HEIGHT*MAP_POSITION_HEIGHT):
         self.__width = width
         self.__height = height
 

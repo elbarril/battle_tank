@@ -5,3 +5,4 @@ class SolidMapObject(MapObject):
         super().__init__(*args, **kwargs)
         self.symbol = "+"
         self.is_solid = True
+        self.color = 'red'

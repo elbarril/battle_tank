@@ -10,15 +10,31 @@ class Map(MapMatrix):
     def __init__(self, map_size:MapSize=MapSize()):
         super().__init__(map_size)
         self.__size = map_size
+    
+    @property
+    def width(self):
+        return self.__size.width
+    
+    @property
+    def height(self):
+        return self.__size.height
 
     def is_valid_position(self, position:MapObjectPosition):
-        return position.x >=0 and position.y >= 0 and position.y < self.__size.height and position.x < self.__size.width
+        for map_position in position:
+            if map_position.x < 0 or map_position.y < 0 or map_position.y >= self.__size.height or map_position.x >= self.__size.width:
+                return False
+        return True
     
-    def collision(self, position:MapObjectPosition):
-        return self[position].is_solid
+    def collision(self, object:MapObject, position:MapObjectPosition):
+        for map_position in position:
+            if object != self[map_position] and self[map_position].is_solid:
+                return True
+        return False
     
     def remove_object(self, object:MapObject):
-        self[object.position] = MapObjectFactory.create(MapObjectType.FLUID, object.position.x, object.position.y)
+        for map_position in object.position:
+            self[map_position] = MapObjectFactory.create(MapObjectType.FLUID, map_position.x, map_position.y)
 
     def add_object(self, object:MapObject):
-        self[object.position] = object
+        for map_position in object.position:
+            self[map_position] = object

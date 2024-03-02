@@ -1,6 +1,6 @@
-from models.map.MapObjectPosition import MapObjectPosition
+from models.map.MapPosition import MapPosition
 
-class MovableObjectDirection(MapObjectPosition):
+class MovableObjectDirection(MapPosition):
     pass
 
 class MovableObjectDirections:

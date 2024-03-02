@@ -12,6 +12,7 @@ from models.map.MapObject import MapObject
 from models.map.MapObjectType import MapObjectType
 
 from constants.text import TO_STRING_LEVEL
+from constants.map import MAP_POSITION_HEIGHT, MAP_POSITION_WIDTH
 
 class Level:
     def __init__(self, number):
@@ -33,12 +34,13 @@ class Level:
         map_data = MapDataReader.read(self.__number)
         for y, row in enumerate(map_data):
             for x, object_type in enumerate(row):
-                map_object = MapObjectFactory.create(object_type, x, y)
+                map_object = MapObjectFactory.create(object_type, x*MAP_POSITION_WIDTH, y*MAP_POSITION_HEIGHT)
                 object_handler = self.__object_handler[object_type]
                 object_handler(map_object)
 
     def __add_fluid_to_map(self, position):
-        self.__add_object_to_map(MapObjectFactory.create(MapObjectType.FLUID, position.x, position.y))
+        for position in position:
+            self.__add_object_to_map(MapObjectFactory.create(MapObjectType.FLUID, position.x, position.y))
 
     def __set_player_one_tank(self, tank):
         self.__player_one_tank = tank
@@ -54,7 +56,8 @@ class Level:
         self.__add_fluid_to_map(tank.position)
 
     def __add_object_to_map(self, object:MapObject):
-        self.__map[object.position] = object
+        for position in object.position:
+            self.__map[position] = object
 
     def load_player_one(self):
         self.__add_object_to_map(self.__player_one_tank)
