@@ -3,7 +3,7 @@ from models.map.MapObjectType import MapObjectType
 from models.map.MapPosition import MapPosition
 
 from models.map.objects.FluidMapObject import FluidMapObject
-from models.map.objects.SolidMapObject import SolidMapObject
+from models.map.objects.BrickCompound import BrickCompound
 from models.map.objects.PlayerTank import PlayerTank
 from models.map.objects.BotTank import BotTank
 
@@ -13,7 +13,7 @@ from utils.Factory import Factory
 class MapObjectFactory(Factory):
     __map_object_classes = {
         MapObjectType.FLUID: FluidMapObject,
-        MapObjectType.SOLID: SolidMapObject,
+        MapObjectType.BRICK: BrickCompound,
         MapObjectType.PLAYER_ONE: PlayerTank,
         MapObjectType.PLAYER_TWO: PlayerTank,
         MapObjectType.BOT_TANK: BotTank

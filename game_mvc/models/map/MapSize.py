@@ -12,3 +12,6 @@ class MapSize:
     @property
     def height(self):
         return self.__height
+    
+    def __str__(self):
+        return str(self.width) + str(self.height)

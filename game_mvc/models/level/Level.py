@@ -20,7 +20,7 @@ class Level:
             MapObjectType.PLAYER_ONE: self.__set_player_one_tank,
             MapObjectType.PLAYER_TWO: self.__set_player_two_tank,
             MapObjectType.BOT_TANK: self.__create_bot,
-            MapObjectType.SOLID: self.__add_object_to_map,
+            MapObjectType.BRICK: self.__add_object_to_map,
             MapObjectType.FLUID: self.__add_object_to_map
         }
 
@@ -38,6 +38,10 @@ class Level:
                 object_handler = self.__object_handler[object_type]
                 object_handler(map_object)
 
+    def __add_object_to_map(self, object:MapObject):
+        for position in object.position:
+            self.__map[position] = object
+
     def __add_fluid_to_map(self, position):
         for position in position:
             self.__add_object_to_map(MapObjectFactory.create(MapObjectType.FLUID, position.x, position.y))
@@ -54,10 +58,6 @@ class Level:
         bot = BotFactory.create(tank)
         self.__bots.add(bot)
         self.__add_fluid_to_map(tank.position)
-
-    def __add_object_to_map(self, object:MapObject):
-        for position in object.position:
-            self.__map[position] = object
 
     def load_player_one(self):
         self.__add_object_to_map(self.__player_one_tank)

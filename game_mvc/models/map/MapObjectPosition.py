@@ -3,7 +3,13 @@ from models.map.MapPosition import MapPosition
 class MapObjectPosition:
     def __init__(self, map_positions:list[MapPosition]):
         self.__map_positions = map_positions
+
+    def __len__(self):
+        return len(self.__map_positions)
     
+    def __getitem__(self, index) -> MapPosition:
+        return self.__map_positions[index]
+
     def __iter__(self):
         return iter(self.__map_positions)
     

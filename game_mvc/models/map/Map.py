@@ -32,8 +32,10 @@ class Map(MapMatrix):
         return False
     
     def remove_object(self, object:MapObject):
+        map_position = object.position[0]
+        empty_object = MapObjectFactory.create(MapObjectType.FLUID, map_position.x, map_position.y)
         for map_position in object.position:
-            self[map_position] = MapObjectFactory.create(MapObjectType.FLUID, map_position.x, map_position.y)
+            self[map_position] = empty_object
 
     def add_object(self, object:MapObject):
         for map_position in object.position:

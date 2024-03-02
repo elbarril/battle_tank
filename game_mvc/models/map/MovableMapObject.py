@@ -12,6 +12,7 @@ class MovableMapObject(MapObject, ABC):
         self.__direction = direction
         self.__velocity = velocity
         self.color = 'blue'
+        self.is_movable = True
 
     @property
     def velocity(self):

@@ -39,10 +39,10 @@ class GameController:
     def __move_object(self, movable:MovableMapObject, direction:MovableObjectDirection):
         next_position = movable.position + direction
         map = self.model.level.map
-        if not map.is_valid_position(next_position): return
-        movable.direction = direction
-        if map.collision(movable, next_position): return
-        map.remove_object(movable)
-        movable.move(next_position)
-        map.add_object(movable)
+        if map.is_valid_position(next_position):
+            map.remove_object(movable)
+            movable.direction = direction
+            if not map.collision(movable, next_position):
+                movable.move(next_position)
+            map.add_object(movable)
         self.view.show_map(map)
