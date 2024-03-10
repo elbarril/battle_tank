@@ -5,6 +5,7 @@ from models.map.objects.Tank import Tank
 class AbstractPlayer(ABC):
     is_bot = None
     movements = None
+    shoot = None
 
     def __init__(self, number=None, tank=None):
         self.number = number

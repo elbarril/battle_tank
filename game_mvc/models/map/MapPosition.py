@@ -21,7 +21,7 @@ class MapPosition:
             return self.x == other.x and self.y == other.y
 
     def __str__(self):
-        return str(self.x) + str(self.y)
+        return f"MapPosition(x={self.x},y={self.y})"
     
     def __add__(self, other):
         if isinstance(other, MapPosition):

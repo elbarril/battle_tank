@@ -7,32 +7,17 @@ from models.map.MapObjectSize import MapObjectSize
 from constants.text import TO_STRING_OBJECT
 
 class MapObject(ABC):
-    __is_solid = None
     __symbol = None
     __color = None
     __image = None
-    __is_movable = None
-    __is_compound = None
 
-    def __init__(self, position:MapPosition, size=MapObjectSize(2,2)):
+    def __init__(self, position:MapPosition, size:MapObjectSize):
+        if not isinstance(position, MapPosition):
+            raise TypeError(f"Wrong position type: {position}")
+        if not isinstance(size, MapObjectSize):
+            raise TypeError(f"Wrong size type: {size}")
         self.__position = MapObjectPosition(position*size)
         self.__size = size
-    
-    @property
-    def is_compound(self):
-        return self.__is_compound
-    
-    @is_compound.setter
-    def is_compound(self, is_compound):
-        self.__is_compound = is_compound
-    
-    @property
-    def is_movable(self):
-        return self.__is_movable
-    
-    @is_movable.setter
-    def is_movable(self, is_movable):
-        self.__is_movable = is_movable
     
     @property
     def image(self):
@@ -41,14 +26,6 @@ class MapObject(ABC):
     @image.setter
     def image(self, image):
         self.__image = image
-    
-    @property
-    def is_solid(self):
-        return self.__is_solid
-    
-    @is_solid.setter
-    def is_solid(self, is_solid):
-        self.__is_solid = is_solid
 
     @property
     def symbol(self):
@@ -64,6 +41,8 @@ class MapObject(ABC):
     
     @position.setter
     def position(self, position):
+        if not isinstance(position, MapObjectPosition):
+            raise TypeError(f"Wrong type MapObjectPosition: {position}")
         self.__position = position
 
     @property

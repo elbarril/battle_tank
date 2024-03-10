@@ -39,12 +39,12 @@ class Level:
                 object_handler(map_object)
 
     def __add_object_to_map(self, object:MapObject):
-        for position in object.position:
-            self.__map[position] = object
+        self.__map[object.position] = object
 
-    def __add_fluid_to_map(self, position):
-        for position in position:
-            self.__add_object_to_map(MapObjectFactory.create(MapObjectType.FLUID, position.x, position.y))
+    def __add_fluid_to_map(self, object_position):
+        empty_object = MapObjectFactory.create_empty(object_position[0].x, object_position[0].y, None)
+        for position in object_position:
+            self.__add_object_to_map(empty_object)
 
     def __set_player_one_tank(self, tank):
         self.__player_one_tank = tank
