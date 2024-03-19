@@ -1,6 +1,19 @@
-from utils.Size import Size
+class MapObjectSize:
+    def __init__(self, width, height):
+        self.__width = width
+        self.__height = height
 
-class MapObjectSize(Size):
+    @property
+    def width(self):
+        return self.__width
+
+    @property
+    def height(self):
+        return self.__height
+    
+    def __iter__(self):
+        return iter((self.width, self.height))
+
     def __truediv__(self, other):
         if isinstance(other, int):
             result = self.__floordiv__(other)

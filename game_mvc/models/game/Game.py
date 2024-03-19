@@ -1,17 +1,21 @@
-from utils.Singleton import Singleton
-
-from models.factories.PlayerFactory import PlayerFactory
-from models.factories.LevelFactory import LevelFactory
-
 from constants.text import TO_STRING_GAME
-from constants.game import FIRST_LEVEL
+from constants.game import FIRST_LEVEL, FIRST_PLAYER, SECOND_PLAYER
 
 from models.game.GameStateManager import GameStateManager
 from models.game.GameModeManager import GameModeManager
 
-class Game(Singleton):
-    __player_one = None
-    __player_two = None
+from models.level.Level import Level
+from models.player.Player import Player
+
+class Game:
+    __instance = None
+
+    def __new__(cls):
+        if cls.__instance is None:
+            cls.__instance = super().__new__(cls)
+        return cls.__instance
+    
+    __players:dict[int, Player] = {}
     __level = None
 
     def __init__(self):
@@ -20,38 +24,30 @@ class Game(Singleton):
 
     @property
     def mode(self):
-        return self.__mode_manager.mode_value
+        return self.__mode_manager.mode
 
     def toggle_players_mode(self):
         if self.__mode_manager.is_one_player_mode:
-            self.__mode_manager.two_players()
+            self.__mode_manager.set_mode(SECOND_PLAYER)
         else:
-            self.__mode_manager.one_player()
+            self.__mode_manager.set_mode(FIRST_PLAYER)
 
-    def __create_player_one(self):
-        self.__player_one = PlayerFactory.create(1)
-        self.__player_one.add_tank(self.__level.player_one_tank)
-        self.__level.load_player_one()
-
-    def __create_player_two(self):
-        self.__player_two = PlayerFactory.create(2)
-        self.__player_two.add_tank(self.__level.player_two_tank)
-        self.__level.load_player_two()
-
-    def create_players(self):
-        self.__create_player_one()
+    def load_players(self):
+        self.__players.setdefault(FIRST_PLAYER, Player(FIRST_PLAYER))
         if self.__mode_manager.is_two_player_mode:
-            self.__create_player_two()
-        self.__state_manager.players_ready()
+            self.__players.setdefault(SECOND_PLAYER, Player(SECOND_PLAYER))
     
-    def new_level(self, number=FIRST_LEVEL):
-        self.__level = LevelFactory.create(number)
-        self.__level.load_map()
+    def load_level(self, number=FIRST_LEVEL):
+        self.__level = Level(number)
+        self.__level.load_map_data()
         self.__state_manager.level_ready()
-        return self.__level
+
+    def load_map(self):
+        self.level.add_static_tanks_to_map()
+        self.level.add_player_tanks_to_map(self.players)
+        self.level.add_bot_tanks_to_map()
     
     def play_level(self):
-        self.__level.load_bots()
         self.__state_manager.level_start()
     
     @property
@@ -60,7 +56,7 @@ class Game(Singleton):
     
     @property
     def players(self):
-        return [player for player in [self.__player_one, self.__player_two] if player is not None]
+        return [player for player in self.__players.values() if player is not None]
 
     def __str__(self):
         return TO_STRING_GAME % (self.players, self.__level)

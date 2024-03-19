@@ -1,7 +1,6 @@
 from abc import ABC
 
 from models.map.MapPosition import MapPosition
-from models.map.MapObjectPosition import MapObjectPosition
 from models.map.MapObjectSize import MapObjectSize
 
 from constants.text import TO_STRING_OBJECT
@@ -16,7 +15,7 @@ class MapObject(ABC):
             raise TypeError(f"Wrong position type: {position}")
         if not isinstance(size, MapObjectSize):
             raise TypeError(f"Wrong size type: {size}")
-        self.__position = MapObjectPosition(position*size)
+        self.__position = position
         self.__size = size
     
     @property
@@ -41,8 +40,8 @@ class MapObject(ABC):
     
     @position.setter
     def position(self, position):
-        if not isinstance(position, MapObjectPosition):
-            raise TypeError(f"Wrong type MapObjectPosition: {position}")
+        if not isinstance(position, MapPosition):
+            raise TypeError(f"Wrong position type: {position}")
         self.__position = position
 
     @property

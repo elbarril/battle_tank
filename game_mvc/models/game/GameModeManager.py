@@ -1,30 +1,26 @@
-from models.game.GameMode import GameMode
+
+from constants.game import FIRST_PLAYER, SECOND_PLAYER
+
+from enum import Enum
+class GameMode(Enum):
+    ONE_PLAYER = FIRST_PLAYER
+    TWO_PLAYERS = SECOND_PLAYER
 
 class GameModeManager:
     def __init__(self):
-        self.__game_mode = GameMode.ONE_PLAYER
+        self.__mode = GameMode.ONE_PLAYER
 
     @property
-    def mode_value(self):
-        return self.__game_mode.value
-    
-    def __is_valid_mode_transition(self, new_mode):
-        return new_mode in GameMode
+    def mode(self):
+        return self.__mode.value
 
-    def set_game_mode(self, new_mode):
-        if self.__is_valid_mode_transition(new_mode):
-            self.__game_mode = new_mode
-
-    def one_player(self):
-        self.set_game_mode(GameMode.ONE_PLAYER)
-
-    def two_players(self):
-        self.set_game_mode(GameMode.TWO_PLAYERS)
+    def set_mode(self, new_mode):
+        self.__mode = GameMode(new_mode)
 
     @property
     def is_one_player_mode(self):
-        return self.__game_mode is GameMode.ONE_PLAYER
+        return self.__mode is GameMode.ONE_PLAYER
 
     @property
     def is_two_player_mode(self):
-        return self.__game_mode is GameMode.TWO_PLAYERS
+        return self.__mode is GameMode.TWO_PLAYERS

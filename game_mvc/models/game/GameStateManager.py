@@ -1,4 +1,11 @@
-from models.game.GameState import GameState
+from enum import Enum
+
+class GameState(Enum):
+    STARTED = 0
+    LEVEL_READY = 1
+    PLAYING = 2
+    PAUSED = 3
+    GAME_OVER = 4
 
 class GameStateManager:
     def __init__(self):
@@ -15,17 +22,14 @@ class GameStateManager:
         if not self.__is_valid_state_transition(new_state):
             self.__game_state = new_state
 
-    def players_ready(self):
-        self.set_game_state(GameState.PLAYERS_READY)
+    def game_init(self):
+        self.set_game_state(GameState.STARTED)
 
     def level_ready(self):
         self.set_game_state(GameState.LEVEL_READY)
 
     def level_start(self):
         self.set_game_state(GameState.PLAYING)
-
-    def game_init(self):
-        self.set_game_state(GameState.STARTED)
 
     def game_over(self):
         self.set_game_state(GameState.GAME_OVER)
@@ -35,9 +39,9 @@ class GameStateManager:
         return self.__game_state is GameState.STARTED
     
     @property
-    def is_players_ready(self):
-        return self.__game_state is GameState.PLAYERS_READY
-    
-    @property
     def is_level_ready(self):
         return self.__game_state is GameState.LEVEL_READY
+    
+    @property
+    def is_level_playing(self):
+        return self.__game_state is GameState.PLAYING

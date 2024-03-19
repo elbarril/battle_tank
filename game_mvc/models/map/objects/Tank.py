@@ -11,7 +11,7 @@ class Tank(MovableMapObject, SolidMapObject):
 
     def shoot(self):
         next_position = self.position + self.direction
-        return Bullet(next_position[0], self.direction)
+        return Bullet(next_position, self.direction)
 
     def __str__(self):
         return super().__str__() % (TO_STRING_TANK, self.position, self.size)
