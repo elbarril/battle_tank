@@ -24,8 +24,9 @@ class MapPosition:
         return f"MapPosition(x={self.x},y={self.y})"
     
     def __add__(self, other):
-        if isinstance(other, MapPosition):
-            return MapPosition(int(other.x + self.x), int(other.y + self.y))
+        if isinstance(other, (MapPosition, MapObjectSize)):
+            x,y = other
+            return MapPosition(int(x + self.x), int(y + self.y))
     
     def __radd__(self, other):
         return self.__add__(other)
@@ -40,3 +41,7 @@ class MapPosition:
 
     def __rmul__(self, other):
         return self.__mul__(other)
+    
+    def __floordiv__(self, other):
+        if isinstance(other, int):
+            return MapPosition(self.x // other, self.y // other)

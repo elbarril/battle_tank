@@ -1,5 +1,5 @@
 from models.game.Game import Game
-from views.GameConsoleView import GameConsoleView
+from views.GameView import GameView
 
 from models.map.MapObject import MapObject
 from models.map.MovableMapObject import MovableMapObject
@@ -9,20 +9,23 @@ from models.map.objects.Tank import Tank
 from models.map.objects.SolidMapObject import SolidMapObject
 from models.map.objects.FluidMapObject import FluidMapObject
 
+from threading import Thread
+from time import sleep
+
 class GameController:
-    def __init__(self, model:Game, view:GameConsoleView):
+    def __init__(self, model:Game, view:GameView):
         self.model = model
         self.view = view
 
     def run(self):
         self.view.listen_keyboard("space", self.__play)
         self.view.listen_keyboard("m", self.__toggle_mode)
-        self.view.show("Mode:", self.model.mode, "players")
+        self.view.set_mode_label("Mode:", self.model.mode, "players")
         self.view.loop("esc")
 
     def __toggle_mode(self):
         self.model.toggle_players_mode()
-        self.view.show("Mode:", self.model.mode, "players")
+        self.view.set_mode_label("Mode:", self.model.mode, "players")
     
     def __play(self):
         self.view.shut_keyboard("space")
@@ -34,13 +37,20 @@ class GameController:
         self.__set_players_movement_events()
         self.__set_players_shoot_events()
         self.model.play_level()
-        self.view.show_map(self.model.level.map)
+
+        for row in self.model.level.map:
+            for object in row:
+                self.view.create_object_view(object)
+
+    def __shoot_thread(self, tank):
+        thread = Thread(target=lambda t=tank:self.__tank_shoots(t))
+        thread.daemon = True
+        thread.run()
 
     def __set_players_shoot_events(self):
         for player in self.model.players:
             for key in player.shoot:
-                event = lambda t=player.tank:self.__tank_shoots(t)
-                self.view.listen_keyboard(key, event)
+                self.view.listen_keyboard(key, lambda t=player.tank:self.__shoot_thread(player.tank))
 
     def __tank_shoots(self, tank):
         if not isinstance(tank, Tank):
@@ -48,14 +58,24 @@ class GameController:
         map = self.model.level.map
         bullet = tank.shoot()
         map[bullet.position] = bullet
-        while False:
-            collisions = self.__get_collisions(bullet, bullet.position)
-            if collisions or not map.is_valid_position(bullet.position):
+        next_position = bullet.position + bullet.direction
+        self.view.create_object_view(bullet)
+        while True:
+            if not map.is_valid_position(next_position*bullet.size): break
+            map[bullet.position*bullet.size] = FluidMapObject(bullet.position, bullet.size)
+            collisions = self.__get_collisions(bullet, next_position)
+            if collisions:
+                for object in collisions:
+                    map[object.position*object.size] = FluidMapObject(object.position, object.size)
+                    self.view.delete_object_view(object)
+                    if not isinstance(object, Tank): break
                 break
-            map[bullet.position] = FluidMapObject(bullet.position, bullet.size)
-            bullet.position = bullet.position + bullet.direction
-            map[bullet.position] = bullet
-            self.view.show_map(map)
+            else:
+                bullet.position = next_position
+                map[bullet.position*bullet.size] = bullet
+                next_position = bullet.position + bullet.direction
+                self.view.move_object_view(bullet)
+        self.view.delete_object_view(bullet)
 
     def __set_players_movement_events(self):
         for player in self.model.players:
@@ -70,38 +90,27 @@ class GameController:
             raise TypeError(f"Wrong direction type: {direction}")
         map = self.model.level.map
         next_position = movable.position + direction
-        if movable.direction != direction or self.__object_can_move(movable, next_position):
+        if movable.direction != direction or map.is_valid_position(next_position*movable.size):
             if movable.direction != direction:
                 movable.direction = direction
+                self.view.update_object_view(movable)
             else:
                 collisions = self.__get_collisions(movable, next_position)
                 if not collisions:
-                    for position in movable.position*movable.size:
-                        map[position] = FluidMapObject(movable.position, movable.size)
+                    map[movable.position*movable.size] = FluidMapObject(movable.position, movable.size)
                     movable.position = next_position
-                    for position in movable.position*movable.size:
-                        map[position] = movable
+                    map[movable.position*movable.size] = movable
+                    self.view.move_object_view(movable)
                 else:
+                    return
                     tanks = [object for object in collisions if isinstance(object, Tank)]
                     if tanks:
-                        for position in movable.position*movable.size:
-                            map[position] = FluidMapObject(movable.position, movable.size)
+                        map[movable.position*movable.size] = FluidMapObject(movable.position, movable.size)
 
-            self.view.show_map(map)
-
-    def __object_can_move(self, movable, position):
-        if not isinstance(movable, MovableMapObject):
-            raise TypeError(f"Wrong movable type: {movable}")
-        if not isinstance(position, MapPosition):
-            raise TypeError(f"Wrong position type: {position}")
-        for pos in position*movable.size:
-            if not self.model.level.map.is_valid_position(pos):
-                return False
-        return True
 
     def __get_collisions(self, object, position):
         if not isinstance(object, MapObject):
             raise TypeError(f"Wrong object type: {object}")
         if not isinstance(position, MapPosition):
             raise TypeError(f"Wrong position type: {position}")
-        return [map_object for map_object in [self.model.level.map[pos] for pos in position*object.size] if map_object != object and isinstance(map_object,SolidMapObject)]
+        return [map_object for map_object in self.model.level.map[position*object.size] if map_object != object and isinstance(map_object, SolidMapObject)]

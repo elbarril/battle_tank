@@ -3,6 +3,7 @@ from models.map.Map import Map
 from views.ViewInterfaz import ViewInterfaz
 
 class GameConsoleView(ViewInterfaz):
+    __view_map=[]
     __KEYBOARD = {
         "space": "space",
         "esc": "esc",
@@ -25,8 +26,15 @@ class GameConsoleView(ViewInterfaz):
 
     def show_map(self, map:Map):
         print("")
-        for row in map:
-            print([obj.symbol for obj in row if obj])
+        self.__view_map = [[obj.symbol for obj in row if obj] for row in map]
+        for row in self.__view_map:
+            print(row)
+
+    def update_object_view(self, object):
+        pass
+
+    def move_object_view(self, object):
+        pass
 
     def listen_keyboard(self, key, event):
         keyboard.add_hotkey(key, event)

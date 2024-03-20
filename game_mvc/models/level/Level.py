@@ -62,8 +62,7 @@ class Level(MapObjectCreator):
             for obj in object:
                 self.__add_object_to_map(obj)
         else:
-            for position in object.position*object.size:
-                self.__map[position] = object
+            self.__map[object.position*object.size] = object
 
     @property
     def map(self) -> Map:

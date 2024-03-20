@@ -13,6 +13,14 @@ class ViewInterfaz(ABC):
         pass
 
     @abstractmethod
+    def update_object_view(self, object):
+        pass
+
+    @abstractmethod
+    def move_object_view(self, object):
+        pass
+
+    @abstractmethod
     def listen_keyboard(self, key, event):
         pass
 

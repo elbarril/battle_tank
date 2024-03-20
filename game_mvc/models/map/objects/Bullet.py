@@ -1,10 +1,9 @@
 from models.map.MovableMapObject import MovableMapObject
-from models.map.MapObjectSize import MapObjectSize
 from models.map.objects.SolidMapObject import SolidMapObject
 
 class Bullet(MovableMapObject, SolidMapObject):
-    def __init__(self, position, direction):
-        super().__init__(position, MapObjectSize(1,1), direction)
+    def __init__(self, position, size, direction):
+        super().__init__(position, size, direction)
         self.symbol = "G"
         self.image = 'bullet'
 
