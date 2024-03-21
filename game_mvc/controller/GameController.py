@@ -9,7 +9,6 @@ from models.map.objects.Tank import Tank
 from models.map.objects.SolidMapObject import SolidMapObject
 from models.map.objects.FluidMapObject import FluidMapObject
 
-from threading import Thread
 from time import sleep
 
 class GameController:
@@ -42,15 +41,11 @@ class GameController:
             for object in row:
                 self.view.create_object_view(object)
 
-    def __shoot_thread(self, tank):
-        thread = Thread(target=lambda t=tank:self.__tank_shoots(t))
-        thread.daemon = True
-        thread.run()
-
     def __set_players_shoot_events(self):
         for player in self.model.players:
             for key in player.shoot:
-                self.view.listen_keyboard(key, lambda t=player.tank:self.__shoot_thread(player.tank))
+                shoot = lambda t=player.tank:self.__tank_shoots(t)
+                self.view.listen_keyboard(key, shoot)
 
     def __tank_shoots(self, tank):
         if not isinstance(tank, Tank):
@@ -80,8 +75,8 @@ class GameController:
     def __set_players_movement_events(self):
         for player in self.model.players:
             for key, direction in player.movements:
-                event = lambda m=player.tank,d=direction:self.__move_or_rotate_object(m, d)
-                self.view.listen_keyboard(key, event)
+                move = lambda m=player.tank,d=direction:self.__move_or_rotate_object(m, d)
+                self.view.listen_keyboard(key, move)
 
     def __move_or_rotate_object(self, movable, direction):
         if not isinstance(movable, MovableMapObject):
