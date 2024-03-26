@@ -96,12 +96,6 @@ class GameController:
                     movable.position = next_position
                     map[movable.position*movable.size] = movable
                     self.view.move_object_view(movable)
-                else:
-                    return
-                    tanks = [object for object in collisions if isinstance(object, Tank)]
-                    if tanks:
-                        map[movable.position*movable.size] = FluidMapObject(movable.position, movable.size)
-
 
     def __get_collisions(self, object, position):
         if not isinstance(object, MapObject):

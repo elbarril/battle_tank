@@ -5,7 +5,7 @@ from models.game.GameStateManager import GameStateManager
 from models.game.GameModeManager import GameModeManager
 
 from models.level.Level import Level
-from models.player.Player import Player
+from models.player.Player import PlayerOne, PlayerTwo
 
 class Game:
     __instance = None
@@ -15,7 +15,7 @@ class Game:
             cls.__instance = super().__new__(cls)
         return cls.__instance
     
-    __players:dict[int, Player] = {}
+    __players = {}
     __level = None
 
     def __init__(self):
@@ -33,9 +33,9 @@ class Game:
             self.__mode_manager.set_mode(FIRST_PLAYER)
 
     def load_players(self):
-        self.__players.setdefault(FIRST_PLAYER, Player(FIRST_PLAYER))
+        self.__players.setdefault(FIRST_PLAYER, PlayerOne())
         if self.__mode_manager.is_two_player_mode:
-            self.__players.setdefault(SECOND_PLAYER, Player(SECOND_PLAYER))
+            self.__players.setdefault(SECOND_PLAYER, PlayerTwo())
     
     def load_level(self, number=FIRST_LEVEL):
         self.__level = Level(number)
@@ -43,7 +43,7 @@ class Game:
         self.__state_manager.level_ready()
 
     def load_map(self):
-        self.level.add_static_tanks_to_map()
+        self.level.add_statics_to_map()
         self.level.add_player_tanks_to_map(self.players)
         self.level.add_bot_tanks_to_map()
     

@@ -1,10 +1,8 @@
-from models.player.Bot import Bot
-
 from models.map.MapObject import MapObject
 from models.map.MapObjectType import MapObjectType
 
 from models.map.objects.BrickCompound import BrickCompound
-from models.map.objects.PlayerTank import PlayerTank
+from models.map.objects.PlayerTank import PlayerOneTank, PlayerTwoTank
 from models.map.objects.BotTank import BotTank
 
 from constants.game import FIRST_PLAYER, SECOND_PLAYER
@@ -18,17 +16,17 @@ BOT_TANK_TYPES = {
 }
 
 PLAYER_TANK_TYPES = {
-    MapObjectType.PLAYER_ONE: PlayerTank,
-    MapObjectType.PLAYER_TWO: PlayerTank
+    MapObjectType.PLAYER_ONE: PlayerOneTank,
+    MapObjectType.PLAYER_TWO: PlayerTwoTank
 }
 
 MAP_OBJECT_TYPES = STATIC_OBJECT_TYPES | BOT_TANK_TYPES | PLAYER_TANK_TYPES
 
 
 class MapObjectCreator:
-    __bots:set[Bot] = set()
+    __bot_tanks:set[BotTank] = set()
     __statics:set[MapObject] = set()
-    __player_tanks:dict[int, PlayerTank] = {
+    __player_tanks = {
         FIRST_PLAYER: None,
         SECOND_PLAYER: None
     }
@@ -43,12 +41,11 @@ class MapObjectCreator:
             player_number = FIRST_PLAYER if object_type is MapObjectType.PLAYER_ONE else SECOND_PLAYER
             self.__player_tanks[player_number] = map_object
         elif object_type in BOT_TANK_TYPES:
-            bot = Bot(map_object)
-            self.__bots.add(bot)
+            self.__bot_tanks.add(map_object)
 
     @property
-    def _bots(self):
-        return self.__bots
+    def _bot_tanks(self):
+        return self.__bot_tanks
 
     @property
     def _statics(self):
