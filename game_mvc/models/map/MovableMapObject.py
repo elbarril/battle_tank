@@ -29,6 +29,14 @@ class MovableMapObject(MapObject, ABC):
     @direction.setter
     def direction(self, direction):
         self.__direction = direction
+
+    @property
+    def image(self):
+        return self._image + '_' + str(self.direction)
+
+    @image.setter
+    def image(self, image):
+        self._image = image
     
     def __str__(self):
         return super().__str__()

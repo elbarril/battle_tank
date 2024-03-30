@@ -2,6 +2,7 @@ from models.map.MovableObjectDirection import MovableObjectDirections
 
 from constants.text import TO_STRING_PLAYER
 from constants.game import FIRST_PLAYER, SECOND_PLAYER
+from views.GameView import TK_KEYBOARD
 
 class Player:
     def __init__(self, number):
@@ -20,20 +21,20 @@ class PlayerOne(Player):
     def __init__(self):
         super().__init__(FIRST_PLAYER)
         self.movements = (
-            ("up", MovableObjectDirections.UP),
-            ("down", MovableObjectDirections.DOWN),
-            ("left", MovableObjectDirections.LEFT),
-            ("right", MovableObjectDirections.RIGHT),
+            (TK_KEYBOARD.UP, MovableObjectDirections.UP),
+            (TK_KEYBOARD.DOWN, MovableObjectDirections.DOWN),
+            (TK_KEYBOARD.LEFT, MovableObjectDirections.LEFT),
+            (TK_KEYBOARD.RIGHT, MovableObjectDirections.RIGHT),
         )
-        self.shoot = ("m",)
+        self.shoot = (TK_KEYBOARD.M,)
 
 class PlayerTwo(Player):
     def __init__(self):
         super().__init__(SECOND_PLAYER)
         self.movements = (
-            ("w", MovableObjectDirections.UP),
-            ("s", MovableObjectDirections.DOWN),
-            ("a", MovableObjectDirections.LEFT),
-            ("d", MovableObjectDirections.RIGHT),
+            (TK_KEYBOARD.W, MovableObjectDirections.UP),
+            (TK_KEYBOARD.S, MovableObjectDirections.DOWN),
+            (TK_KEYBOARD.A, MovableObjectDirections.LEFT),
+            (TK_KEYBOARD.D, MovableObjectDirections.RIGHT),
         )
-        self.shoot = ("space",)
+        self.shoot = (TK_KEYBOARD.SPACE,)

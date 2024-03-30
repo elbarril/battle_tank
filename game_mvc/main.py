@@ -4,14 +4,16 @@ from views.GameConsoleView import GameConsoleView
 from views.GameView import GameView
 from controller.GameController import GameController
 
-def main(view):
+def main(debug=False):
     game = Game()
-    GameController(game, view).run()
+    view = GameView()
+    GameController(game, view).run(debug)
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1 and sys.argv[1] == "--console":
-        view = GameConsoleView()
-    else:
-        view = GameView()
-    
-    main(view)
+    if len(sys.argv) > 1:
+        args = sys.argv[1:]
+        options = {
+            "debug": "-d" in args,
+        }
+        main(**options)
+    else: main()

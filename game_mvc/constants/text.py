@@ -8,4 +8,5 @@ TO_STRING_GAME = """
 Game summary:
     Players: %s
     Level: %s
+        Map: %s
 """

@@ -1,141 +1,118 @@
-from tkinter import Label, Tk, Canvas, PhotoImage, NW
-from typing import Callable
-from views.ViewInterfaz import ViewInterfaz
+from tkinter import Label, Tk, Canvas, PhotoImage
+from tkinter.constants import *
+
+from models.map.Map import Map
 from models.map.MapObject import MapObject
 from models.map.MapObjectCompound import MapObjectCompound
 from models.map.MovableMapObject import MovableMapObject
 from constants.map import MAP_WIDTH, MAP_HEIGHT, MAP_ROW_POSITIONS, MAP_COLUMN_POSITIONS, PIXEL_FACTOR
 
-class GameView(Tk, ViewInterfaz):
+class TK_KEYBOARD:
+    SPACE = "<space>"
+    ESC = "<Escape>"
+    M = "m"
+    UP = "<Up>"
+    DOWN = "<Down>"
+    RIGHT = "<Right>"
+    LEFT = "<Left>"
+    W = "w"
+    A = "a"
+    S = "s"
+    D = "d"
+    P = 'p'
+
+class GameView(Tk):
     __enable_images = True
     __enable_colors = True
-    __KEYBOARD = {
-        "space": "<space>",
-        "esc": "<Escape>",
-        "m": "m",
-        "up": "<Up>",
-        "down": "<Down>",
-        "right": "<Right>",
-        "left": "<Left>",
-        "w": "w",
-        "a": "a",
-        "s": "s",
-        "d": "d"
-    }
-        
+
+    images:dict[str, PhotoImage] = {}    
+    canvas_objects:dict[MapObject, int] = {}
+    
     def __init__(self):
         Tk.__init__(self)
-        ViewInterfaz.__init__(self, self.__KEYBOARD)
-        self.mode_label = Label(self, text="")
+        self.canvas = None
+        self.mode_label = None
+        self.pause_menu = None
+
+    def set_mode_label(self, mode):
+        self.mode_label = Label(self, text="Mode: %d players." % mode)
         self.mode_label.pack()
-        x0, y0, x1, y1 = self.__get_pixel_coords(MAP_WIDTH, MAP_HEIGHT)
-        self.canvas = Canvas(self, width=x0, height=y0)
+
+    def remove_mode_label(self):
+        if self.mode_label: self.mode_label.destroy()
+
+    def set_pause_menu(self):
+        self.pause_menu = Label(self, text='<P> to resume\n<Esc> to back to menu')
+        self.pause_menu.pack()
+
+    def remove_pause_menu(self):
+        if self.pause_menu: self.pause_menu.destroy()
+
+    def set_map_canvas(self, map:Map):
+        self.canvas = Canvas(self)
+        x0, y0 = self.__get_pixel_coords(map.width, map.height)
+        self.canvas.config(width=map.width, height=map.height)
         self.canvas.pack(expand=True)
-        self.images:dict[str, PhotoImage] = {}
-        self.__canvas_objects = dict()
 
-    def set_mode_label(self, *args):
-        self.mode_label.config(text=" ".join((str(arg) for arg in args)))
+        for row in map:
+            for object in row: self.create_object_view(object)
 
-    def show(self, *args):
-        pass
+    def remove_map_canvas(self):
+        if self.canvas: self.canvas.destroy()
+        self.canvas_objects.clear()
 
-    def show_map(self, map):
-        pass
-
-    def create_object_view(self, object):
-        if not isinstance(object, MapObject):
-            raise TypeError(f"Wrong object type: {object}")
+    def create_object_view(self, object:MapObject):
         if isinstance(object, MapObjectCompound):
             for obj in object:
                 self.create_object_view(obj)
-        elif not object in self.__canvas_objects:
-            object_view = None
-            x0, y0, x1, y1 = self.__get_pixel_coords(object.position.x, object.position.y, object.size.width, object.size.height)
-            if object.image and self.__enable_images:
-                if not isinstance(object.image, str):
-                    raise TypeError(f"Wrong object image type: {object.image}")
-                image = self.__get_object_image(object)
-                object_view = self.canvas.create_image(x0, y0, image=image, anchor=NW)
-            elif object.color and self.__enable_colors:
-                if not isinstance(object.color, str):
-                    raise TypeError(f"Wrong object color type: {object.color}")
-                object_view = self.canvas.create_rectangle(x0, y0, x1, y1, fill=object.color)
-            self.__canvas_objects.setdefault(object, object_view)
+        elif not object in self.canvas_objects:
+            object_view = self.__get_object_view(object)
+            self.canvas_objects.setdefault(object, object_view)
+        else: self.update_object_view(object)
 
-    def delete_object_view(self, object):
-        if not isinstance(object, MapObject):
-            raise TypeError(f"Wrong object type: {object}")
-        if object in self.__canvas_objects:
-            object_view = self.__canvas_objects.get(object)
+    def delete_object_view(self, object:MapObject):
+        if self.canvas_objects.get(object):
+            object_view = self.canvas_objects.get(object)
             self.canvas.delete(object_view)
 
-    def update_object_view(self, object):
-        if not isinstance(object, MapObject):
-            raise TypeError(f"Wrong object type: {object}")
-        if object in self.__canvas_objects:
-            object_view = self.__canvas_objects.get(object)
+    def update_object_view(self, object:MapObject):
+        if self.canvas_objects.get(object):
+            object_view = self.canvas_objects.get(object)
             if object.image and self.__enable_images:
                 image = self.__get_object_image(object)
                 self.canvas.itemconfig(object_view, image=image)
             elif object.color and self.__enable_colors:
                 self.canvas.itemconfig(object_view, fill=object.color)
 
-    def move_object_view(self, object):
-        if not isinstance(object, MovableMapObject):
-            raise TypeError(f"Wrong object type: {object}")
-        if object in self.__canvas_objects:
-            object_view = self.__canvas_objects.get(object)
-            x0,y0,x1,y1 = self.__get_pixel_coords(object.direction.x*object.velocity, object.direction.y*object.velocity)
+    def move_object_view(self, object:MovableMapObject):
+        if object in self.canvas_objects:
+            object_view = self.canvas_objects.get(object)
+            x0, y0 = self.__get_pixel_coords(object.direction.x, object.direction.y)
             self.canvas.move(object_view, x0, y0)
 
-    def __get_object_image(self, object):
-        if not isinstance(object, MapObject):
-            raise TypeError(f"Wrong object type: {object}")
-        if not isinstance(object.image, str):
-            raise TypeError(f"Wrong object image type: {object.image}")
-        if isinstance(object, MovableMapObject):
-            image_path = 'images\/' + object.image + '_' + str(object.direction) + '.png'
+    def __get_object_view(self, object:MapObject):
+        object_view = None
+        x0, y0, x1, y1 = self.__get_pixel_coords(object.position.x, object.position.y, object.size.width, object.size.height)
+        if object.image and self.__enable_images:
+            image = self.__get_object_image(object)
+            object_view = self.canvas.create_image(x0, y0, image=image, anchor=NW)
+        elif object.color and self.__enable_colors:
+            object_view = self.canvas.create_rectangle(x0, y0, x1, y1, fill=object.color)
+        return object_view
+
+    def __get_object_image(self, object:MapObject):
+        if object.image in self.images:
+            return self.images[object.image]
         else:
-            image_path = 'images\/' + object.image + '.png'
-        if image_path in self.images:
-            return self.images[image_path]
-        else:
-            image = PhotoImage(file=image_path)
+            image = PhotoImage(file='images/' + object.image + '.png')
             image = image.subsample(MAP_COLUMN_POSITIONS//object.size.width, MAP_ROW_POSITIONS//object.size.height)
-            return self.images.setdefault(image_path, image)
+            return self.images.setdefault(object.image, image)
 
     def __get_pixel_coords(self, x, y, width=None, height=None):
-        if not (isinstance(x,(int,float)) and isinstance(y,(int,float))):
-            raise TypeError(f"Wrong number type\n x:{x}, y:{y}")
-        x0 = x1 = x * MAP_ROW_POSITIONS * PIXEL_FACTOR
-        y0 = y1 = y * MAP_COLUMN_POSITIONS * PIXEL_FACTOR
+        x0 = x * MAP_ROW_POSITIONS * PIXEL_FACTOR
+        y0 = y * MAP_COLUMN_POSITIONS * PIXEL_FACTOR
         if width and height:
-            if not (isinstance(width,int) and isinstance(height,int)):
-                raise TypeError(f"Wrong number type\n width:{width}, height:{height}")
             x1 = x0 + width * MAP_ROW_POSITIONS * PIXEL_FACTOR
             y1 = y0 + height * MAP_COLUMN_POSITIONS * PIXEL_FACTOR
-        return (x0, y0, x1, y1)
-
-    def listen_keyboard(self, key, event):
-        if not isinstance(key,str):
-            raise TypeError(f"Wrong key type {key}")
-        if not isinstance(event, Callable):
-            raise TypeError(f"Wrong event type {event}")
-        self.bind(self._get_key(key), lambda e:event())
-
-    def shut_keyboard(self, key):
-        if not isinstance(key,str):
-            raise TypeError(f"Wrong key type {key}")
-        if key in self.__KEYBOARD:
-            self.unbind(self.__KEYBOARD[key])
-
-    def loop(self, exit_key):
-        if not isinstance(exit_key,str):
-            raise TypeError(f"Wrong key type {exit_key}")
-        self.bind(self._get_key(exit_key), lambda e:self.__exit())
-        self.mainloop()
-
-    def __exit(self):
-        self.focus_set()
-        self.quit()
+            return (x0, y0, x1, y1)
+        return (x0, y0)

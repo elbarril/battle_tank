@@ -14,13 +14,16 @@ class GameModeManager:
     def mode(self):
         return self.__mode.value
 
-    def set_mode(self, new_mode):
-        self.__mode = GameMode(new_mode)
+    def set_one_player(self):
+        self.__mode = GameMode.ONE_PLAYER
+
+    def set_two_players(self):
+        self.__mode = GameMode.TWO_PLAYERS
 
     @property
-    def is_one_player_mode(self):
+    def is_one_player(self):
         return self.__mode is GameMode.ONE_PLAYER
 
     @property
-    def is_two_player_mode(self):
+    def is_two_players(self):
         return self.__mode is GameMode.TWO_PLAYERS

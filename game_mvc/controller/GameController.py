@@ -1,55 +1,97 @@
 from models.game.Game import Game
-from views.GameView import GameView
+from views.GameView import GameView, TK_KEYBOARD
 
 from models.map.MapObject import MapObject
 from models.map.MovableMapObject import MovableMapObject
 from models.map.MovableObjectDirection import MovableObjectDirection
 from models.map.MapPosition import MapPosition
-from models.map.objects.Tank import Tank
+from models.map.objects.PlayerTank import PlayerTank
 from models.map.objects.SolidMapObject import SolidMapObject
 from models.map.objects.FluidMapObject import FluidMapObject
-
-from time import sleep
 
 class GameController:
     def __init__(self, model:Game, view:GameView):
         self.model = model
         self.view = view
+        self.__current_binds = []
 
-    def run(self):
-        self.view.listen_keyboard("space", self.__play)
-        self.view.listen_keyboard("m", self.__toggle_mode)
-        self.view.set_mode_label("Mode:", self.model.mode, "players")
-        self.view.loop("esc")
+    def run(self, debug):
+        self.__debug = debug
+        self.__init_menu()
+        self.view.set_mode_label(self.model.mode)
+        self.view.mainloop()
+
+    def __init_menu(self):
+        self.model.reset()
+        self.view.remove_pause_menu()
+        self.view.remove_map_canvas()
+        self.__unbind_current_binds()
+        self.__bind_menu_events()
+
+    def __bind_menu_events(self):
+        bind = self.view.bind(TK_KEYBOARD.ESC, lambda e:self.__exit())
+        self.__current_binds.append((TK_KEYBOARD.ESC, bind))
+        bind = self.view.bind(TK_KEYBOARD.SPACE, lambda e:self.__play())
+        self.__current_binds.append((TK_KEYBOARD.SPACE, bind))
+        bind = self.view.bind(TK_KEYBOARD.M, lambda e:self.__toggle_mode())
+        self.__current_binds.append((TK_KEYBOARD.M, bind))
+
+    def __bind_level_events(self):
+        for player in self.model.players:
+            for key, direction in player.movements:
+                move = lambda e,m=player.tank,d=direction:self.__move_or_rotate_object(m, d)
+                bind = self.view.bind(key, move)
+                self.__current_binds.append((key, bind))
+            for key in player.shoot:
+                shoot = lambda e,t=player.tank:self.__tank_shoots(t)
+                bind = self.view.bind(key, shoot)
+                self.__current_binds.append((key, bind))
+        bind = self.view.bind(TK_KEYBOARD.P, lambda e:self.__pause())
+        self.__current_binds.append((TK_KEYBOARD.P, bind))
+
+    def __bind_pause_events(self):
+        bind = self.view.bind(TK_KEYBOARD.ESC, lambda e:self.__init_menu())
+        self.__current_binds.append((TK_KEYBOARD.ESC, bind))
+        bind = self.view.bind(TK_KEYBOARD.P, lambda e:self.__resume())
+        self.__current_binds.append((TK_KEYBOARD.P, bind))
+
+    def __unbind_current_binds(self):
+        for key,bind in self.__current_binds:
+            self.view.unbind(key, funcid=bind)
+        self.__current_binds.clear()
+
+    def __pause(self):
+        self.view.remove_map_canvas()
+        self.view.set_pause_menu()
+        self.__unbind_current_binds()
+        self.__bind_pause_events()
+        self.model.pause_level()
+
+    def __resume(self):
+        self.view.remove_pause_menu()
+        self.__play_level()
+
+    def __exit(self):
+        self.view.focus_set()
+        self.view.quit()
 
     def __toggle_mode(self):
         self.model.toggle_players_mode()
-        self.view.set_mode_label("Mode:", self.model.mode, "players")
+        self.view.remove_mode_label()
+        self.view.set_mode_label(self.model.mode)
     
     def __play(self):
-        self.view.shut_keyboard("space")
-        self.view.shut_keyboard("m")
         self.model.load_players()
         self.model.load_level()
-        self.model.load_map()
-        
-        self.__set_players_movement_events()
-        self.__set_players_shoot_events()
+        self.__play_level()
+
+    def __play_level(self):
+        self.view.set_map_canvas(self.model.level.map)
+        self.__unbind_current_binds()
+        self.__bind_level_events()
         self.model.play_level()
 
-        for row in self.model.level.map:
-            for object in row:
-                self.view.create_object_view(object)
-
-    def __set_players_shoot_events(self):
-        for player in self.model.players:
-            for key in player.shoot:
-                shoot = lambda t=player.tank:self.__tank_shoots(t)
-                self.view.listen_keyboard(key, shoot)
-
-    def __tank_shoots(self, tank):
-        if not isinstance(tank, Tank):
-            raise TypeError(f"Wrong tank type: {tank}")      
+    def __tank_shoots(self, tank:PlayerTank):    
         map = self.model.level.map
         bullet = tank.shoot()
         map[bullet.position] = bullet
@@ -63,7 +105,7 @@ class GameController:
                 for object in collisions:
                     map[object.position*object.size] = FluidMapObject(object.position, object.size)
                     self.view.delete_object_view(object)
-                    if not isinstance(object, Tank): break
+                    if not isinstance(object, PlayerTank): break
                 break
             else:
                 bullet.position = next_position
@@ -72,17 +114,7 @@ class GameController:
                 self.view.move_object_view(bullet)
         self.view.delete_object_view(bullet)
 
-    def __set_players_movement_events(self):
-        for player in self.model.players:
-            for key, direction in player.movements:
-                move = lambda m=player.tank,d=direction:self.__move_or_rotate_object(m, d)
-                self.view.listen_keyboard(key, move)
-
-    def __move_or_rotate_object(self, movable, direction):
-        if not isinstance(movable, MovableMapObject):
-            raise TypeError(f"Wrong movable type: {movable}")
-        if not isinstance(direction, MovableObjectDirection):
-            raise TypeError(f"Wrong direction type: {direction}")
+    def __move_or_rotate_object(self, movable:MovableMapObject, direction:MovableObjectDirection):
         map = self.model.level.map
         next_position = movable.position + direction
         if movable.direction != direction or map.is_valid_position(next_position*movable.size):
@@ -97,9 +129,5 @@ class GameController:
                     map[movable.position*movable.size] = movable
                     self.view.move_object_view(movable)
 
-    def __get_collisions(self, object, position):
-        if not isinstance(object, MapObject):
-            raise TypeError(f"Wrong object type: {object}")
-        if not isinstance(position, MapPosition):
-            raise TypeError(f"Wrong position type: {position}")
+    def __get_collisions(self, object:MapObject, position:MapPosition):
         return [map_object for map_object in self.model.level.map[position*object.size] if map_object != object and isinstance(map_object, SolidMapObject)]

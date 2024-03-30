@@ -8,7 +8,7 @@ from constants.text import TO_STRING_OBJECT
 class MapObject(ABC):
     __symbol = None
     __color = None
-    __image = None
+    _image = None
 
     def __init__(self, position:MapPosition, size:MapObjectSize):
         if not isinstance(position, MapPosition):
@@ -20,11 +20,11 @@ class MapObject(ABC):
     
     @property
     def image(self):
-        return self.__image
+        return self._image
     
     @image.setter
     def image(self, image):
-        self.__image = image
+        self._image = image
 
     @property
     def symbol(self):
