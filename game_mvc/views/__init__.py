@@ -1,11 +1,11 @@
 from tkinter import Label, Tk, Canvas, PhotoImage
 from tkinter.constants import *
 
-from models.map.Map import Map
+from models.map import Map
 from models.map.MapObject import MapObject
 from models.map.MapObjectCompound import MapObjectCompound
 from models.map.MovableMapObject import MovableMapObject
-from constants.map import MAP_WIDTH, MAP_HEIGHT, MAP_ROW_POSITIONS, MAP_COLUMN_POSITIONS, PIXEL_FACTOR
+from constants import MAP_ROW_POSITIONS, MAP_COLUMN_POSITIONS, PIXEL_FACTOR
 
 class TK_KEYBOARD:
     SPACE = "<space>"
@@ -51,11 +51,12 @@ class GameView(Tk):
     def set_map_canvas(self, map:Map):
         self.canvas = Canvas(self)
         x0, y0 = self.__get_pixel_coords(map.width, map.height)
-        self.canvas.config(width=map.width, height=map.height)
+        self.canvas.config(width=x0, height=y0)
         self.canvas.pack(expand=True)
 
         for row in map:
-            for object in row: self.create_object_view(object)
+            for object in row: 
+                if object is not None: self.create_object_view(object)
 
     def remove_map_canvas(self):
         if self.canvas: self.canvas.destroy()

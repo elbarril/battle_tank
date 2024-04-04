@@ -1,11 +1,11 @@
-from constants.text import TO_STRING_GAME
-from constants.game import FIRST_LEVEL, FIRST_PLAYER, SECOND_PLAYER
+from constants import TO_STRING_GAME
+from constants import FIRST_LEVEL, FIRST_PLAYER, SECOND_PLAYER
 
 from models.game.GameStateManager import GameStateManager
 from models.game.GameModeManager import GameModeManager
 
-from models.level.Level import Level
-from models.player.Player import Player, PlayerOne, PlayerTwo
+from models.level import Level
+from models.player import HumanPlayer, PlayerOne, PlayerTwo
 
 class Game:
     __instance = None
@@ -18,7 +18,7 @@ class Game:
     def __init__(self):
         self.__mode_manager = GameModeManager()
         self.__state_manager = GameStateManager()
-        self.__players:dict[int, Player] = {}
+        self.__players:dict[int, HumanPlayer] = {}
         self.__level:Level = None
 
     @property
@@ -27,7 +27,7 @@ class Game:
     
     def reset(self):
         self.__state_manager.game_init()
-        self.__players:dict[int, Player] = {}
+        self.__players:dict[int, HumanPlayer] = {}
         self.__level:Level = None
 
     def toggle_players_mode(self):

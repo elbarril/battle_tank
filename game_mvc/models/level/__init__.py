@@ -1,10 +1,10 @@
 from csv import reader
 from os import walk
 
-from models.player.Bot import Bot
-from models.player.Player import Player
+from models.player import BotPlayerCollection
+from models.player import HumanPlayer
 
-from models.map.Map import Map
+from models.map import Map
 from models.map.MapObject import MapObject
 from models.map.MapObjectType import MapObjectType
 from models.map.MapObjectCompound import MapObjectCompound
@@ -13,9 +13,9 @@ from models.map.MapObjectSize import MapObjectSize
 
 from models.level.MapObjectCreator import MapObjectCreator
 
-from constants.text import TO_STRING_LEVEL
-from constants.map import MAP_COLUMN_POSITIONS, MAP_ROW_POSITIONS, MAPS_PATH, MAPS_FILENAME_PREFIX, MAPS_FILE_EXTENSION
-from constants.game import FIRST_LEVEL, MAX_LEVEL_NUMBER
+from constants import TO_STRING_LEVEL
+from constants import MAP_COLUMN_POSITIONS, MAP_ROW_POSITIONS, MAPS_PATH, MAPS_FILENAME_PREFIX, MAPS_FILE_EXTENSION
+from constants import FIRST_LEVEL, MAX_LEVEL_NUMBER
 
 LEVEL_MAP_FILES = [map_file_path for map_file_path in next(walk(MAPS_PATH), (None, None, []))[2]]
 
@@ -27,7 +27,7 @@ class Level(MapObjectCreator):
             raise ValueError(f"Level number should be between {FIRST_LEVEL} and {MAX_LEVEL_NUMBER}.\nNumber: {number}")
         self.__number = number
         self.__map = Map()
-        self.__bot = Bot()
+        self.__bot = BotPlayerCollection()
 
     def load_map_data(self):
         number_string = str(self.__number).zfill(2)
@@ -51,13 +51,13 @@ class Level(MapObjectCreator):
             
     def add_bot_tanks_to_map(self):
         for bot_tank in self._bot_tanks:
-            self.__bot.add_tank(bot_tank)
+            self.__bot.set_bot(bot_tank)
             self.__add_object_to_map(bot_tank)
 
-    def add_player_tanks_to_map(self, players:list[Player]):
+    def add_player_tanks_to_map(self, players:list[HumanPlayer]):
         for player in players:
             player_tank = self._player_tanks[player.number]
-            player.add_tank(player_tank)
+            player.set_tank(player_tank)
             self.__add_object_to_map(player_tank)
 
     def __add_object_to_map(self, object:MapObject) -> None:

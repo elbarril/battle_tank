@@ -1,5 +1,5 @@
 
-from constants.game import FIRST_PLAYER, SECOND_PLAYER
+from constants import FIRST_PLAYER, SECOND_PLAYER
 
 from enum import Enum
 class GameMode(Enum):

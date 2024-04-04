@@ -3,7 +3,7 @@ from abc import ABC
 from models.map.MapPosition import MapPosition
 from models.map.MapObjectSize import MapObjectSize
 
-from constants.text import TO_STRING_OBJECT
+from constants import TO_STRING_OBJECT
 
 class MapObject(ABC):
     __symbol = None
@@ -62,4 +62,6 @@ class MapObject(ABC):
 
     def __str__(self):
         return TO_STRING_OBJECT
-    
+
+    def __repr__(self):
+        return type(self).__name__

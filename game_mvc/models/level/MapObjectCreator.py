@@ -5,7 +5,7 @@ from models.map.objects.BrickCompound import BrickCompound
 from models.map.objects.PlayerTank import PlayerOneTank, PlayerTwoTank
 from models.map.objects.BotTank import BotTank
 
-from constants.game import FIRST_PLAYER, SECOND_PLAYER
+from constants import FIRST_PLAYER, SECOND_PLAYER
 
 STATIC_OBJECT_TYPES = {
     MapObjectType.BRICK: BrickCompound

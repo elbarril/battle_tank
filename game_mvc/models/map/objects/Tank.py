@@ -4,7 +4,7 @@ from models.map.objects.Bullet import Bullet
 from models.map.MapObjectSize import MapObjectSize
 from models.map.MovableObjectDirection import MovableObjectDirections
 
-from constants.text import TO_STRING_TANK
+from constants import TO_STRING_TANK
 
 class Tank(MovableMapObject, SolidMapObject):
     def __init__(self, position, size):

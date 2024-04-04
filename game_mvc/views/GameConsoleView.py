@@ -1,5 +1,5 @@
 import keyboard
-from models.map.Map import Map
+from models.map import Map
 from views.ViewInterfaz import ViewInterfaz
 
 class GameConsoleView(ViewInterfaz):
