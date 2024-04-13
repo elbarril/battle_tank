@@ -5,8 +5,6 @@ from models.map.objects.BrickCompound import BrickCompound
 from models.map.objects.PlayerTank import PlayerOneTank, PlayerTwoTank
 from models.map.objects.BotTank import BotTank
 
-from constants import FIRST_PLAYER, SECOND_PLAYER
-
 STATIC_OBJECT_TYPES = {
     MapObjectType.BRICK: BrickCompound
 }
@@ -27,8 +25,8 @@ class MapObjectCreator:
     __bot_tanks:set[BotTank] = set()
     __statics:set[MapObject] = set()
     __player_tanks = {
-        FIRST_PLAYER: None,
-        SECOND_PLAYER: None
+        1: None,
+        2: None
     }
 
     def _create_map_object(self, object_type, position, size):
@@ -38,7 +36,7 @@ class MapObjectCreator:
         if object_type in STATIC_OBJECT_TYPES:
             self.__statics.add(map_object)
         elif object_type in PLAYER_TANK_TYPES:
-            player_number = FIRST_PLAYER if object_type is MapObjectType.PLAYER_ONE else SECOND_PLAYER
+            player_number = 1 if object_type is MapObjectType.PLAYER_ONE else 2
             self.__player_tanks[player_number] = map_object
         elif object_type in BOT_TANK_TYPES:
             self.__bot_tanks.add(map_object)

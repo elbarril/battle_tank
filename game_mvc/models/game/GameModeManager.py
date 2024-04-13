@@ -1,10 +1,7 @@
-
-from constants import FIRST_PLAYER, SECOND_PLAYER
-
 from enum import Enum
 class GameMode(Enum):
-    ONE_PLAYER = FIRST_PLAYER
-    TWO_PLAYERS = SECOND_PLAYER
+    ONE_PLAYER = 1
+    TWO_PLAYERS = 2
 
 class GameModeManager:
     def __init__(self):

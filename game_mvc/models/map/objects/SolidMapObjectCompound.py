@@ -1,7 +1,7 @@
-from models.map.MapObjectCompound import MapObjectCompound
+from models.map.CompoundMapObject import CompoundMapObject
 from models.map.objects.SolidMapObject import SolidMapObject
     
-class SolidMapObjectCompound(MapObjectCompound, SolidMapObject):
+class SolidMapObjectCompound(CompoundMapObject, SolidMapObject):
     def __init__(self, position, size, map_object, object_size):
         super().__init__(position, size, map_object, object_size)
 

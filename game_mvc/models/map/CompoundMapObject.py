@@ -1,6 +1,6 @@
 from models.map.MapObject import MapObject
 
-class MapObjectCompound(MapObject):
+class CompoundMapObject(MapObject):
     def __init__(self, position, size, map_object, object_size):
         super().__init__(position, size)
         self.__objects:list[MapObject] = [map_object(position, object_size) for position in position*size]

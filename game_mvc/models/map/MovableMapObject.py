@@ -1,15 +1,12 @@
 from abc import ABC
 
 from models.map.MapObject import MapObject
-from models.map.MovableObjectDirection import (
-    MovableObjectDirection,
-    MovableObjectDirections
-)
+from models.map.MapObjectDirection import MapObjectDirection, UP
 
 class MovableMapObject(MapObject, ABC):
     def __init__(self, position, size, direction=None, velocity=None):
         super().__init__(position, size)
-        self.__direction = direction or MovableObjectDirections.UP
+        self.__direction = direction or UP
         self.__velocity = velocity or 1
         self.color = 'blue'
         self.is_movable = True
@@ -23,7 +20,7 @@ class MovableMapObject(MapObject, ABC):
         self.__velocity = velocity
 
     @property
-    def direction(self) -> MovableObjectDirection:
+    def direction(self) -> MapObjectDirection:
         return self.__direction
     
     @direction.setter
@@ -32,7 +29,7 @@ class MovableMapObject(MapObject, ABC):
 
     @property
     def image(self):
-        return self._image + '_' + str(self.direction)
+        return self._image + '_' + self.__direction.string
 
     @image.setter
     def image(self, image):

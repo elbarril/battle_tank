@@ -3,9 +3,8 @@ from tkinter.constants import *
 
 from models.map import Map
 from models.map.MapObject import MapObject
-from models.map.MapObjectCompound import MapObjectCompound
+from models.map.CompoundMapObject import CompoundMapObject
 from models.map.MovableMapObject import MovableMapObject
-from constants import MAP_ROW_POSITIONS, MAP_COLUMN_POSITIONS, PIXEL_FACTOR
 
 class TK_KEYBOARD:
     SPACE = "<space>"
@@ -63,7 +62,7 @@ class GameView(Tk):
         self.canvas_objects.clear()
 
     def create_object_view(self, object:MapObject):
-        if isinstance(object, MapObjectCompound):
+        if isinstance(object, CompoundMapObject):
             for obj in object:
                 self.create_object_view(obj)
         elif not object in self.canvas_objects:
@@ -106,14 +105,14 @@ class GameView(Tk):
             return self.images[object.image]
         else:
             image = PhotoImage(file='images/' + object.image + '.png')
-            image = image.subsample(MAP_COLUMN_POSITIONS//object.size.width, MAP_ROW_POSITIONS//object.size.height)
+            image = image.subsample(2//object.size.width, 2//object.size.height)
             return self.images.setdefault(object.image, image)
 
     def __get_pixel_coords(self, x, y, width=None, height=None):
-        x0 = x * MAP_ROW_POSITIONS * PIXEL_FACTOR
-        y0 = y * MAP_COLUMN_POSITIONS * PIXEL_FACTOR
+        x0 = x * 2 * 10
+        y0 = y * 2 * 10
         if width and height:
-            x1 = x0 + width * MAP_ROW_POSITIONS * PIXEL_FACTOR
-            y1 = y0 + height * MAP_COLUMN_POSITIONS * PIXEL_FACTOR
+            x1 = x0 + width * 2 * 10
+            y1 = y0 + height * 2 * 10
             return (x0, y0, x1, y1)
         return (x0, y0)

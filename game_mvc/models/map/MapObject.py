@@ -3,8 +3,6 @@ from abc import ABC
 from models.map.MapPosition import MapPosition
 from models.map.MapObjectSize import MapObjectSize
 
-from constants import TO_STRING_OBJECT
-
 class MapObject(ABC):
     __symbol = None
     __color = None
@@ -59,9 +57,6 @@ class MapObject(ABC):
     @color.setter
     def color(self, color):
         self.__color = color
-
-    def __str__(self):
-        return TO_STRING_OBJECT
 
     def __repr__(self):
         return type(self).__name__

@@ -7,42 +7,38 @@ from models.player import HumanPlayer
 from models.map import Map
 from models.map.MapObject import MapObject
 from models.map.MapObjectType import MapObjectType
-from models.map.MapObjectCompound import MapObjectCompound
+from models.map.CompoundMapObject import CompoundMapObject
 from models.map.MapPosition import MapPosition
 from models.map.MapObjectSize import MapObjectSize
 
 from models.level.MapObjectCreator import MapObjectCreator
 
-from constants import TO_STRING_LEVEL
-from constants import MAP_COLUMN_POSITIONS, MAP_ROW_POSITIONS, MAPS_PATH, MAPS_FILENAME_PREFIX, MAPS_FILE_EXTENSION
-from constants import FIRST_LEVEL, MAX_LEVEL_NUMBER
-
-LEVEL_MAP_FILES = [map_file_path for map_file_path in next(walk(MAPS_PATH), (None, None, []))[2]]
+LEVEL_MAP_FILES = [map_file_path for map_file_path in next(walk("./maps/"), (None, None, []))[2]]
 
 class Level(MapObjectCreator):
     def __init__(self, number:int) -> None:
         if not isinstance(number, int):
             raise TypeError(f"Wrong level number type: {number}")
-        if not number >= FIRST_LEVEL or number > MAX_LEVEL_NUMBER:
-            raise ValueError(f"Level number should be between {FIRST_LEVEL} and {MAX_LEVEL_NUMBER}.\nNumber: {number}")
+        if not number >= 1 or number > 99:
+            raise ValueError(f"Level number should be between {1} and {99}.\nNumber: {number}")
         self.__number = number
         self.__map = Map()
         self.__bot = BotPlayerCollection()
 
     def load_map_data(self):
         number_string = str(self.__number).zfill(2)
-        map_file = MAPS_FILENAME_PREFIX + number_string + MAPS_FILE_EXTENSION
+        map_file = "level_" + number_string + ".csv"
 
         if not map_file in LEVEL_MAP_FILES:
-            raise FileNotFoundError(f"Level {number_string} doesn't have map file in '{MAPS_PATH}'.")
+            raise FileNotFoundError(f"Level {number_string} doesn't have map file in './maps/'.")
 
-        with open(MAPS_PATH + map_file, mode="r") as map_file:
+        with open("./maps/" + map_file, mode="r") as map_file:
             map_matrix = reader(map_file)
             for y, row in enumerate(map_matrix):
                 for x, object_type in enumerate(row):
                     object_type = MapObjectType(object_type)
-                    position = MapPosition(x*MAP_COLUMN_POSITIONS, y*MAP_ROW_POSITIONS)
-                    size = MapObjectSize(MAP_COLUMN_POSITIONS, MAP_ROW_POSITIONS)
+                    position = MapPosition(x*2, y*2)
+                    size = MapObjectSize(2, 2)
                     self._create_map_object(object_type, position, size)
 
     def add_statics_to_map(self):
@@ -61,7 +57,7 @@ class Level(MapObjectCreator):
             self.__add_object_to_map(player_tank)
 
     def __add_object_to_map(self, object:MapObject) -> None:
-        if isinstance(object, MapObjectCompound):
+        if isinstance(object, CompoundMapObject):
             for obj in object:
                 self.__add_object_to_map(obj)
         else:
@@ -74,6 +70,3 @@ class Level(MapObjectCreator):
     @property
     def number(self) -> int:
         return self.__number
-
-    def __str__(self):
-        return TO_STRING_LEVEL % str(self.__number)

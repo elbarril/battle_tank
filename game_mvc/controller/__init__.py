@@ -3,19 +3,57 @@ from views import GameView, TK_KEYBOARD
 
 from models.map.MapObject import MapObject
 from models.map.MovableMapObject import MovableMapObject
-from models.map.MovableObjectDirection import MovableObjectDirection
+from models.map.MapObjectDirection import MapObjectDirection
 from models.map.MapPosition import MapPosition
 from models.map.objects.PlayerTank import PlayerTank
 from models.map.objects.Bullet import Bullet
+
+class GameBind:
+    def __init__(self, key:str, id:str) -> None:
+        self.__key = key
+        self.__id = id
+
+    @property
+    def key(self) -> str:
+        return self.__key
+    
+    @property
+    def id(self) -> str:
+        return self.__id
+    
+    def __eq__(self, other):
+        if isinstance(other, GameBind):
+            return self.key == other.key and self.id == other.id
+
+from typing import Callable
+
+class GameBindManager:
+    def __init__(self, view:GameView) -> None:
+        self.__view = view
+        self.__binds:list[GameBind] = []
+
+    def add(self, key:str, callable:Callable) -> None:
+        id = self.__view.bind(key, callable)
+        self.__binds.append(GameBind(key, id))
+
+    def remove(self, bind:GameBind) -> None:
+        self.__view.unbind(bind.key, bind.id)
+        self.__binds.remove(bind)
+
+    def clear(self) -> None:
+        for bind in self:
+            self.remove(bind)
+
+    def __iter__(self) -> list[GameBind]:
+        return iter(self.__binds)
 
 class GameController:
     def __init__(self, model:Game, view:GameView):
         self.model = model
         self.view = view
-        self.__current_binds = []
+        self.binds = GameBindManager(view)
 
-    def run(self, debug:bool):
-        self.__debug = debug
+    def run(self):
         self.__init_menu()
         self.view.set_mode_label(self.model.mode)
         self.view.mainloop()
@@ -24,8 +62,10 @@ class GameController:
         self.model.reset()
         self.view.remove_pause_menu()
         self.view.remove_map_canvas()
-        self.__unbind_current_binds()
-        self.__bind_menu_events()
+        self.binds.clear()
+        self.binds.add(TK_KEYBOARD.ESC, lambda e:self.__exit())
+        self.binds.add(TK_KEYBOARD.SPACE, lambda e:self.__play())
+        self.binds.add(TK_KEYBOARD.M, lambda e:self.__toggle_mode())
 
     def __toggle_mode(self):
         self.model.toggle_players_mode()
@@ -39,15 +79,24 @@ class GameController:
 
     def __play_level(self):
         self.view.set_map_canvas(self.model.level.map)
-        self.__unbind_current_binds()
-        self.__bind_level_events()
+        self.binds.clear()
+        print([b for b in self.binds])
+        for player in self.model.players:
+            for action in player.movement:
+                move = lambda e,m=player.tank,d=action.value:self.__move_or_rotate_object(m, d)
+                self.binds.add(action.key, move)
+            for action in player.shoot:
+                shoot = lambda e,t=player.tank:self.__tank_shoots(t)
+                self.binds.add(action.key, shoot)
+        self.binds.add(TK_KEYBOARD.P, lambda e:self.__pause())
         self.model.play_level()
 
     def __pause(self):
         self.view.remove_map_canvas()
         self.view.set_pause_menu()
-        self.__unbind_current_binds()
-        self.__bind_pause_events()
+        self.binds.clear()
+        self.binds.add(TK_KEYBOARD.ESC, lambda e:self.__init_menu())
+        self.binds.add(TK_KEYBOARD.P, lambda e:self.__resume())
         self.model.pause_level()
 
     def __resume(self):
@@ -57,38 +106,6 @@ class GameController:
     def __exit(self):
         self.view.focus_set()
         self.view.quit()
-
-    def __bind_menu_events(self):
-        bind = self.view.bind(TK_KEYBOARD.ESC, lambda e:self.__exit())
-        self.__current_binds.append((TK_KEYBOARD.ESC, bind))
-        bind = self.view.bind(TK_KEYBOARD.SPACE, lambda e:self.__play())
-        self.__current_binds.append((TK_KEYBOARD.SPACE, bind))
-        bind = self.view.bind(TK_KEYBOARD.M, lambda e:self.__toggle_mode())
-        self.__current_binds.append((TK_KEYBOARD.M, bind))
-
-    def __bind_level_events(self):
-        for player in self.model.players:
-            for key, direction in player.movement_keys:
-                move = lambda e,m=player.tank,d=direction:self.__move_or_rotate_object(m, d)
-                bind = self.view.bind(key, move)
-                self.__current_binds.append((key, bind))
-            for key in player.shoot_keys:
-                shoot = lambda e,t=player.tank:self.__tank_shoots(t)
-                bind = self.view.bind(key, shoot)
-                self.__current_binds.append((key, bind))
-        bind = self.view.bind(TK_KEYBOARD.P, lambda e:self.__pause())
-        self.__current_binds.append((TK_KEYBOARD.P, bind))
-
-    def __bind_pause_events(self):
-        bind = self.view.bind(TK_KEYBOARD.ESC, lambda e:self.__init_menu())
-        self.__current_binds.append((TK_KEYBOARD.ESC, bind))
-        bind = self.view.bind(TK_KEYBOARD.P, lambda e:self.__resume())
-        self.__current_binds.append((TK_KEYBOARD.P, bind))
-
-    def __unbind_current_binds(self):
-        for key,bind in self.__current_binds:
-            self.view.unbind(key, funcid=bind)
-        self.__current_binds.clear()
 
     def __tank_shoots(self, tank:PlayerTank):
         bullet = tank.shoot()
@@ -111,10 +128,10 @@ class GameController:
             self.__move_bullet(bullet)
         #self.view.delete_object_view(bullet)
 
-    def __move_or_rotate_object(self, movable:MovableMapObject, direction:MovableObjectDirection):
+    def __move_or_rotate_object(self, movable:MovableMapObject, direction:MapObjectDirection):
         map = self.model.level.map
         next_position = movable.position + direction
-        if movable.direction != direction or self.__is_valid_position(next_position*movable.size):
+        if movable.direction != direction or next_position*movable.size in map:
             if movable.direction != direction:
                 movable.direction = direction
                 self.view.update_object_view(movable)

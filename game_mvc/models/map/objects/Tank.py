@@ -2,9 +2,7 @@ from models.map.MovableMapObject import MovableMapObject
 from models.map.objects.SolidMapObject import SolidMapObject
 from models.map.objects.Bullet import Bullet
 from models.map.MapObjectSize import MapObjectSize
-from models.map.MovableObjectDirection import MovableObjectDirections
-
-from constants import TO_STRING_TANK
+from models.map.MapObjectDirection import *
 
 class Tank(MovableMapObject, SolidMapObject):
     def __init__(self, position, size):
@@ -14,17 +12,14 @@ class Tank(MovableMapObject, SolidMapObject):
     def shoot(self):
         next_position = self.position + self.direction
         size = None
-        if self.direction in (MovableObjectDirections.UP,MovableObjectDirections.DOWN):
+        if self.direction in (UP,DOWN):
             size = MapObjectSize(2,1)
         else:
             size = MapObjectSize(1,2)
-        if self.direction is MovableObjectDirections.RIGHT:
+        if self.direction is RIGHT:
             x,y = self.size
             next_position += MapObjectSize(x//x, 0)
-        elif self.direction is MovableObjectDirections.DOWN:
+        elif self.direction is DOWN:
             x,y = self.size
             next_position += MapObjectSize(0, y//y)
         return Bullet(next_position, size, self.direction)
-
-    def __str__(self):
-        return super().__str__() % (TO_STRING_TANK, self.position, self.size)
