@@ -48,7 +48,7 @@ class GameView(Tk):
         if self.pause_menu: self.pause_menu.destroy()
 
     def set_map_canvas(self, map:Map):
-        self.canvas = Canvas(self)
+        self.canvas = Canvas(self, bg=map.background_color)
         x0, y0 = self.__get_pixel_coords(map.width, map.height)
         self.canvas.config(width=x0, height=y0)
         self.canvas.pack(expand=True)
@@ -56,6 +56,9 @@ class GameView(Tk):
         for row in map:
             for object in row: 
                 if object is not None: self.create_object_view(object)
+
+        for layer in sorted(map.layers):
+            self.canvas.lift(layer)
 
     def remove_map_canvas(self):
         if self.canvas: self.canvas.destroy()
@@ -95,9 +98,9 @@ class GameView(Tk):
         x0, y0, x1, y1 = self.__get_pixel_coords(object.position.x, object.position.y, object.size.width, object.size.height)
         if object.image and self.__enable_images:
             image = self.__get_object_image(object)
-            object_view = self.canvas.create_image(x0, y0, image=image, anchor=NW)
+            object_view = self.canvas.create_image(x0, y0, image=image, anchor=NW, tags=[object.layer])
         elif object.color and self.__enable_colors:
-            object_view = self.canvas.create_rectangle(x0, y0, x1, y1, fill=object.color)
+            object_view = self.canvas.create_rectangle(x0, y0, x1, y1, fill=object.color, tags=[object.layer])
         return object_view
 
     def __get_object_image(self, object:MapObject):
@@ -105,14 +108,14 @@ class GameView(Tk):
             return self.images[object.image]
         else:
             image = PhotoImage(file='images/' + object.image + '.png')
-            image = image.subsample(2//object.size.width, 2//object.size.height)
+            image = image.subsample(4//object.size.width, 4//object.size.height)
             return self.images.setdefault(object.image, image)
 
     def __get_pixel_coords(self, x, y, width=None, height=None):
-        x0 = x * 2 * 10
-        y0 = y * 2 * 10
+        x0 = x * 10
+        y0 = y * 10
         if width and height:
-            x1 = x0 + width * 2 * 10
-            y1 = y0 + height * 2 * 10
+            x1 = x0 + width * 12
+            y1 = y0 + height * 10
             return (x0, y0, x1, y1)
         return (x0, y0)

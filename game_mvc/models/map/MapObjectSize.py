@@ -20,8 +20,11 @@ class MapObjectSize:
             return result
         
     def __floordiv__(self, other):
-        if isinstance(other, int):
-            return MapObjectSize(self.width // 2, self.height // 2)
+        if isinstance(other, (MapObjectSize,int)):
+            if isinstance(other, int):
+                return MapObjectSize(self.width // 2, self.height // 2)
+            else:
+                return MapObjectSize(self.width // other.width, self.height // other.height)
     
     def __str__(self):
-        return f"MapObjectSize(width={self.width}, height={self.height})"
+        return "w:%d h:%d" % (self.width, self.height)

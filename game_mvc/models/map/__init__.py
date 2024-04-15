@@ -3,11 +3,16 @@ from models.map.MapPosition import MapPosition, MapPositionCollection
 
 class Map:
     def __init__(self):
-        self.__width = 20
-        self.__height = 20
+        self.__background_color = 'black'
+        self.__width = 13 * 4
+        self.__height = 13 * 4
         self.__map = [[None for _ in range(self.__width)] for _ in range(self.__height)]
-        self.__objects = {None: self.__height*self.__width}
+        self.__layers = []
     
+    @property
+    def background_color(self):
+        return self.__background_color
+
     @property
     def width(self):
         return self.__width
@@ -15,6 +20,10 @@ class Map:
     @property
     def height(self):
         return self.__height
+    
+    @property
+    def layers(self):
+        return self.__layers
     
     def __iter__(self):
         return iter(self.__map)
@@ -30,17 +39,7 @@ class Map:
         else:
             x,y = position
             self.__map[y][x] = map_object
-            self.__save_object(map_object)
-
-    def __save_object(self, map_object):
-        object_type = repr(map_object)
-        amount = self.__objects.get(object_type) + 1 if self.__objects.get(object_type) else 1
-        self.__objects.update({object_type: amount})
-
-    def __remove_object(self, map_object):
-        object_type = repr(map_object) if map_object else None
-        amount = self.__objects.get(object_type) - 1 if self.__objects.get(object_type) else 0
-        self.__objects.update({object_type: amount})
+            if map_object.layer not in self.__layers: self.__layers.append(map_object.layer)
 
     def __getitem__(self, position) -> MapObject:
         if not isinstance(position, (MapPosition, MapPositionCollection)):
@@ -58,9 +57,7 @@ class Map:
                 del self[pos]
         else:
             x,y = position
-            map_object = self.__map[y][x]
             self.__map[y][x] = None
-            self.__remove_object(map_object)
 
     def __contains__(self, position):
         if not isinstance(position, (MapPosition, MapPositionCollection)):
@@ -71,6 +68,3 @@ class Map:
                 else: return False
             return True
         else: return -1 < position.y < self.__width and -1 < position.x < self.__width
-
-    def __str__(self):
-        return "\n"+"\n".join([f"\t- {type}: {amount}" for type,amount in self.__objects.items()])

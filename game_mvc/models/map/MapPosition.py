@@ -59,3 +59,6 @@ class MapPosition:
     def __floordiv__(self, other):
         if isinstance(other, int):
             return MapPosition(self.x // other, self.y // other)
+        
+    def __str__(self):
+        return "x:%d y:%d" % (self.x, self.y)

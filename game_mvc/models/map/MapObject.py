@@ -7,6 +7,7 @@ class MapObject(ABC):
     __symbol = None
     __color = None
     _image = None
+    __layer = None
 
     def __init__(self, position:MapPosition, size:MapObjectSize):
         if not isinstance(position, MapPosition):
@@ -15,6 +16,7 @@ class MapObject(ABC):
             raise TypeError(f"Wrong size type: {size}")
         self.__position = position
         self.__size = size
+        self.__layer = "layer %d" % 1
     
     @property
     def image(self):
@@ -57,6 +59,11 @@ class MapObject(ABC):
     @color.setter
     def color(self, color):
         self.__color = color
-
-    def __repr__(self):
-        return type(self).__name__
+    
+    @property
+    def layer(self):
+        return self.__layer
+    
+    @layer.setter
+    def layer(self, layer):
+        self.__layer = "layer %d" % layer

@@ -1,9 +1,9 @@
 from models.map.objects.SolidMapObject import SolidMapObject
     
-class Brick(SolidMapObject):
+class Eagle(SolidMapObject):
     def __init__(self, position, size):
         super().__init__(position, size)
-        self.image = 'brick'
+        self.image = 'eagle'
 
     def __str__(self):
-        return "Brick p:%s s:%s" % (self.position, self.size)
+        return "Eagle p:%s s:%s" % (self.position, self.size)

@@ -6,6 +6,3 @@ class Bullet(MovableMapObject, SolidMapObject):
         super().__init__(position, size, direction)
         self.symbol = "G"
         self.image = 'bullet'
-
-    def __str__(self):
-        return super().__str__() % ("Bullet", self.position, self.size)

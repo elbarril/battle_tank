@@ -1,24 +1,17 @@
-from models.map.MapObjectDirection import *
+import models.map.MapObjectDirection as directions
 from views import TK_KEYBOARD
-from models.map.objects.Tank import Tank
-from models.map import Map
+from models.map.objects.PlayerTank import PlayerTank
 
 class AbstractPlayer:
-    def __init__(self, tank:Tank=None) -> None:
+    def __init__(self, tank:PlayerTank=None) -> None:
         self.__tank = tank
     
     @property
-    def tank(self) -> Tank:
+    def tank(self) -> PlayerTank:
         return self.__tank
 
-    def set_tank(self, tank:Tank) -> None:
+    def set_tank(self, tank:PlayerTank) -> None:
         self.__tank = tank
-
-    def move_tank(self, map:Map, direction:MapObjectDirection) -> None:
-        if self.__tank.position + direction in map:
-            del map[self.__tank.position*self.__tank.size]
-            self.__tank.position = self.__tank.position + direction
-            map[self.__tank.position*self.__tank.size] = self.__tank
 
 class BotPlayer(AbstractPlayer):
     pass
@@ -32,64 +25,56 @@ class BotPlayerCollection:
         bot.set_tank(tank)
         self.__bots.append(bot)
 
-from enum import Enum
-class PlayerAction(Enum):
-    MOVEMENT = 1
-    SHOOT = 2
-
-class PlayerActionKey:
-    def __init__(self, key:str, value=None):
+class PlayerAction:
+    def __init__(self, key:str) -> None:
         self.__key = key
-        self.__value = value
 
     @property
     def key(self) -> str: return self.__key
 
-    @property
-    def value(self) -> str: return self.__value
+class PlayerMovementAction(PlayerAction):
+    def __init__(self, key, direction):
+        super().__init__(key)
+        self.direction = direction
 
 class HumanPlayer(AbstractPlayer):
     def __init__(self, number:int) -> None:
         self.__number = number
-        self.__actions = {
-            PlayerAction.MOVEMENT: [],
-            PlayerAction.SHOOT: []
-        }
+        self.__movements:list[PlayerMovementAction] = []
+        self.__shooting:list[PlayerAction] = []
 
     @property
     def number(self) -> int:
         return self.__number
     
     @property
-    def movement(self) -> list[PlayerActionKey]:
-        return self.__actions[PlayerAction.MOVEMENT]
-    
+    def movements(self) -> list[PlayerMovementAction]:
+        return self.__movements
+
     @property
-    def shoot(self) -> list[PlayerActionKey]:
-        return self.__actions[PlayerAction.SHOOT]
+    def shooting(self) -> list[PlayerAction]:
+        return self.__shooting
 
-    def set_movement_key(self, key:str, direction:MapObjectDirection) -> None:
-        action = PlayerActionKey(key, direction)
-        self.__actions[PlayerAction.MOVEMENT].append(action)
-
-    def set_shoot_key(self, key:str) -> None:
-        action = PlayerActionKey(key)
-        self.__actions[PlayerAction.SHOOT].append(action)
+    def set_action(self, key, direction=None):
+        if direction:
+            self.__movements.append(PlayerMovementAction(key, direction))
+        else:
+            self.__shooting.append(PlayerAction(key))
 
 class PlayerOne(HumanPlayer):
     def __init__(self) -> None:
         super().__init__(1)
-        self.set_movement_key(TK_KEYBOARD.UP, UP)
-        self.set_movement_key(TK_KEYBOARD.DOWN, DOWN)
-        self.set_movement_key(TK_KEYBOARD.LEFT, LEFT)
-        self.set_movement_key(TK_KEYBOARD.RIGHT, RIGHT)
-        self.set_shoot_key(TK_KEYBOARD.M)
+        self.set_action(TK_KEYBOARD.UP, directions.UP)
+        self.set_action(TK_KEYBOARD.DOWN, directions.DOWN)
+        self.set_action(TK_KEYBOARD.LEFT, directions.LEFT)
+        self.set_action(TK_KEYBOARD.RIGHT, directions.RIGHT)
+        self.set_action(TK_KEYBOARD.M)
 
 class PlayerTwo(HumanPlayer):
     def __init__(self) -> None:
         super().__init__(2)
-        self.set_movement_key(TK_KEYBOARD.W, UP)
-        self.set_movement_key(TK_KEYBOARD.S, DOWN)
-        self.set_movement_key(TK_KEYBOARD.A, LEFT)
-        self.set_movement_key(TK_KEYBOARD.D, RIGHT)
-        self.set_shoot_key(TK_KEYBOARD.SPACE)
+        self.set_action(TK_KEYBOARD.W, directions.UP)
+        self.set_action(TK_KEYBOARD.S, directions.DOWN)
+        self.set_action(TK_KEYBOARD.A, directions.LEFT)
+        self.set_action(TK_KEYBOARD.D, directions.RIGHT)
+        self.set_action(TK_KEYBOARD.SPACE)

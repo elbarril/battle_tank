@@ -2,11 +2,12 @@ from models.game import Game
 from views import GameView, TK_KEYBOARD
 
 from models.map.MapObject import MapObject
-from models.map.MovableMapObject import MovableMapObject
+from models.map.objects.SolidMapObject import SolidMapObject
 from models.map.MapObjectDirection import MapObjectDirection
 from models.map.MapPosition import MapPosition
 from models.map.objects.PlayerTank import PlayerTank
 from models.map.objects.Bullet import Bullet
+from models.player import AbstractPlayer
 
 class GameBind:
     def __init__(self, key:str, id:str) -> None:
@@ -53,6 +54,8 @@ class GameController:
         self.view = view
         self.binds = GameBindManager(view)
 
+        self.__bullets:list[Bullet] = []
+
     def run(self):
         self.__init_menu()
         self.view.set_mode_label(self.model.mode)
@@ -75,19 +78,18 @@ class GameController:
     def __play(self):
         self.model.load_players()
         self.model.load_level()
+        self.model.load_map()
         self.__play_level()
 
     def __play_level(self):
         self.view.set_map_canvas(self.model.level.map)
         self.binds.clear()
-        print([b for b in self.binds])
         for player in self.model.players:
-            for action in player.movement:
-                move = lambda e,m=player.tank,d=action.value:self.__move_or_rotate_object(m, d)
-                self.binds.add(action.key, move)
-            for action in player.shoot:
-                shoot = lambda e,t=player.tank:self.__tank_shoots(t)
-                self.binds.add(action.key, shoot)
+            for movement in player.movements:
+                move = lambda e,p=player,d=movement.direction:self.__player_moves(p, d)
+                self.binds.add(movement.key, move)
+            for shooting in player.shooting:
+                self.binds.add(shooting.key, lambda e,p=player:self.__player_shoots(p))
         self.binds.add(TK_KEYBOARD.P, lambda e:self.__pause())
         self.model.play_level()
 
@@ -107,12 +109,15 @@ class GameController:
         self.view.focus_set()
         self.view.quit()
 
-    def __tank_shoots(self, tank:PlayerTank):
-        bullet = tank.shoot()
-        self.__move_bullet(bullet)
+    def __player_shoots(self, player:AbstractPlayer):
+        bullet = player.tank.shoot()
+        self.__bullets.append(bullet)
+        while self.__bullets and False:
+            for b in self.__bullets:
+                self.__bullet_moves(b)
         del self.model.level.map[bullet.position*bullet.size]
 
-    def __move_bullet(self, bullet:Bullet):
+    def __bullet_moves(self, bullet:Bullet):
         if self.__is_valid_position(bullet.position):
             map = self.model.level.map
             collisions = self.__get_collisions(bullet, bullet.position)
@@ -125,22 +130,28 @@ class GameController:
             self.view.create_object_view(bullet)
             bullet.position = bullet.position + bullet.direction
             self.view.move_object_view(bullet)
-            self.__move_bullet(bullet)
-        #self.view.delete_object_view(bullet)
+            self.__bullet_moves(bullet)
+        self.__bullets.remove(bullet)
+        self.view.delete_object_view(bullet)
 
-    def __move_or_rotate_object(self, movable:MovableMapObject, direction:MapObjectDirection):
+    def __player_moves(self, player:AbstractPlayer, direction:MapObjectDirection):
         map = self.model.level.map
-        next_position = movable.position + direction
-        if movable.direction != direction or next_position*movable.size in map:
-            if movable.direction != direction:
-                movable.direction = direction
-                self.view.update_object_view(movable)
-            else:
-                if self.__get_collisions(movable, next_position): return
-                del map[movable.position*movable.size]
-                movable.position = next_position
-                map[movable.position*movable.size] = movable
-                self.view.move_object_view(movable)
+        tank = player.tank
+
+        if tank.direction != direction:
+            tank.direction = direction
+            return self.view.update_object_view(tank)
+
+        next_position = tank.position + direction
+        next_positions = next_position * tank.size
+
+        if next_positions in map:
+            other_objects = [object for object in map[next_positions] if object and not object is tank and isinstance(object, SolidMapObject)]
+            if other_objects: return
+            del map[tank.position*tank.size]
+            tank.position = next_position
+            map[next_positions] = tank
+            return self.view.move_object_view(tank)
 
     def __get_collisions(self, object:MapObject, position:MapPosition) -> list[MapObject]:
         return [map_object for map_object in self.model.level.map[position*object.size] if map_object and map_object != object]

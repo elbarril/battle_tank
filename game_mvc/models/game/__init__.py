@@ -1,5 +1,5 @@
 from models.game.GameStateManager import GameStateManager
-from models.game.GameModeManager import GameMode, GameModeManager
+from models.game.GameModeManager import GameModeManager
 
 from models.level import Level
 from models.player import HumanPlayer, PlayerOne, PlayerTwo
@@ -21,6 +21,11 @@ class LevelFactory:
 
 from config import CONFIG
 
+TEST = {
+    "0": "compound_2x2.csv",
+    "1": "compound_4x4.csv"
+}
+
 class Singleton:
     """One single instance abstract class."""
     __instances = {}
@@ -31,33 +36,7 @@ class Singleton:
         return cls.__instances.get(cls)
 
 class Game(Singleton):
-    """Main game model."""
     def __init__(self, config=CONFIG):
-        """Game init.
-        
-        Parameters
-        ----------
-        config : dict
-            players, levels and map configuration
-            example:
-                CONFIG = {
-                    "levels": {
-                        "first": 1,
-                        "max": 99,
-                        "files": {
-                            "prefix": "level_",
-                            "path": "./maps/",
-                            "extension": ".csv"
-                        }
-                    },
-                    "maps":{
-                        "rows": 20,
-                        "columns": 20
-                    },
-                    "players": [1, 2],
-                    "ppp": 10
-                }
-        """
         self.__mode_manager = GameModeManager()
         self.__state_manager = GameStateManager()
 
@@ -65,14 +44,12 @@ class Game(Singleton):
         self.__level:Level = LevelFactory()
     
     def reset(self):
-        """To reset game as instance init."""
         self.__mode_manager.set_one_player()
         self.__state_manager.game_init()
         self.__players:dict[int, HumanPlayer] = {}
         self.__level:Level = None
 
     def toggle_players_mode(self):
-        """To switch players mode. One to two or two to one."""
         if self.__mode_manager.is_one_player:
             self.__mode_manager.set_two_players()
         else:
@@ -86,7 +63,11 @@ class Game(Singleton):
     
     def load_level(self, number=1):
         self.__level = Level(number)
+        if number in TEST:
+            return self.__level.load_map_data(TEST[number])
         self.__level.load_map_data()
+    
+    def load_map(self):
         self.__level.add_statics_to_map()
         self.__level.add_player_tanks_to_map(self.players)
         self.__level.add_bot_tanks_to_map()
@@ -100,15 +81,12 @@ class Game(Singleton):
 
     @property
     def mode(self):
-        """Players mode"""
         return self.__mode_manager.mode
     
     @property
     def level(self):
-        """Game current level."""
         return self.__level
     
     @property
     def players(self):
-        """Game available players."""
         return [player for player in self.__players.values() if player is not None]
