@@ -1,6 +1,6 @@
-import models.map.MapObjectDirection as directions
 from views import TK_KEYBOARD
-from models.map.objects.PlayerTank import PlayerTank
+from ..map.object import MapObjectDirection as direction
+from ..map.object.tank import PlayerTank
 
 class AbstractPlayer:
     def __init__(self, tank:PlayerTank=None) -> None:
@@ -64,17 +64,17 @@ class HumanPlayer(AbstractPlayer):
 class PlayerOne(HumanPlayer):
     def __init__(self) -> None:
         super().__init__(1)
-        self.set_action(TK_KEYBOARD.UP, directions.UP)
-        self.set_action(TK_KEYBOARD.DOWN, directions.DOWN)
-        self.set_action(TK_KEYBOARD.LEFT, directions.LEFT)
-        self.set_action(TK_KEYBOARD.RIGHT, directions.RIGHT)
+        self.set_action(TK_KEYBOARD.UP, direction.UP)
+        self.set_action(TK_KEYBOARD.DOWN, direction.DOWN)
+        self.set_action(TK_KEYBOARD.LEFT, direction.LEFT)
+        self.set_action(TK_KEYBOARD.RIGHT, direction.RIGHT)
         self.set_action(TK_KEYBOARD.M)
 
 class PlayerTwo(HumanPlayer):
     def __init__(self) -> None:
         super().__init__(2)
-        self.set_action(TK_KEYBOARD.W, directions.UP)
-        self.set_action(TK_KEYBOARD.S, directions.DOWN)
-        self.set_action(TK_KEYBOARD.A, directions.LEFT)
-        self.set_action(TK_KEYBOARD.D, directions.RIGHT)
+        self.set_action(TK_KEYBOARD.W, direction.UP)
+        self.set_action(TK_KEYBOARD.S, direction.DOWN)
+        self.set_action(TK_KEYBOARD.A, direction.LEFT)
+        self.set_action(TK_KEYBOARD.D, direction.RIGHT)
         self.set_action(TK_KEYBOARD.SPACE)

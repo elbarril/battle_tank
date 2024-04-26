@@ -1,4 +1,4 @@
-from models.map.MapObject import MapObject
+from .. import MapObject
     
 class SolidMapObject(MapObject):
     def __init__(self, position, size):

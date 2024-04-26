@@ -1,52 +1,17 @@
-from models.game import Game
+from models import Game
 from views import GameView, TK_KEYBOARD
 
-from models.map.MapObject import MapObject
-from models.map.objects.SolidMapObject import SolidMapObject
-from models.map.MapObjectDirection import MapObjectDirection
-from models.map.MapPosition import MapPosition
-from models.map.objects.PlayerTank import PlayerTank
-from models.map.objects.Bullet import Bullet
+from models.map.object import MapObjectDirection
+from models.map.object.abstract import SolidMapObject
+from models.map.object.tank import Bullet
+
 from models.player import AbstractPlayer
 
-class GameBind:
-    def __init__(self, key:str, id:str) -> None:
-        self.__key = key
-        self.__id = id
+from .GameBindManager import GameBindManager
 
-    @property
-    def key(self) -> str:
-        return self.__key
-    
-    @property
-    def id(self) -> str:
-        return self.__id
-    
-    def __eq__(self, other):
-        if isinstance(other, GameBind):
-            return self.key == other.key and self.id == other.id
+from log import log_time_elapsed
 
-from typing import Callable
-
-class GameBindManager:
-    def __init__(self, view:GameView) -> None:
-        self.__view = view
-        self.__binds:list[GameBind] = []
-
-    def add(self, key:str, callable:Callable) -> None:
-        id = self.__view.bind(key, callable)
-        self.__binds.append(GameBind(key, id))
-
-    def remove(self, bind:GameBind) -> None:
-        self.__view.unbind(bind.key, bind.id)
-        self.__binds.remove(bind)
-
-    def clear(self) -> None:
-        for bind in self:
-            self.remove(bind)
-
-    def __iter__(self) -> list[GameBind]:
-        return iter(self.__binds)
+import time
 
 class GameController:
     def __init__(self, model:Game, view:GameView):
@@ -63,7 +28,7 @@ class GameController:
 
     def __init_menu(self):
         self.model.reset()
-        self.view.remove_pause_menu()
+        self.view.remove_pause_label()
         self.view.remove_map_canvas()
         self.binds.clear()
         self.binds.add(TK_KEYBOARD.ESC, lambda e:self.__exit())
@@ -74,7 +39,7 @@ class GameController:
         self.model.toggle_players_mode()
         self.view.remove_mode_label()
         self.view.set_mode_label(self.model.mode)
-    
+
     def __play(self):
         self.model.load_players()
         self.model.load_level()
@@ -95,14 +60,14 @@ class GameController:
 
     def __pause(self):
         self.view.remove_map_canvas()
-        self.view.set_pause_menu()
+        self.view.set_pause_label()
         self.binds.clear()
         self.binds.add(TK_KEYBOARD.ESC, lambda e:self.__init_menu())
         self.binds.add(TK_KEYBOARD.P, lambda e:self.__resume())
         self.model.pause_level()
 
     def __resume(self):
-        self.view.remove_pause_menu()
+        self.view.remove_pause_label()
         self.__play_level()
 
     def __exit(self):
@@ -110,29 +75,55 @@ class GameController:
         self.view.quit()
 
     def __player_shoots(self, player:AbstractPlayer):
+        if player.tank.shooting: return
         bullet = player.tank.shoot()
-        self.__bullets.append(bullet)
-        while self.__bullets and False:
-            for b in self.__bullets:
-                self.__bullet_moves(b)
-        del self.model.level.map[bullet.position*bullet.size]
+        player.tank.shooting = True
+        map = self.model.level.map
+        bullet_positions = bullet.position*bullet.size
 
-    def __bullet_moves(self, bullet:Bullet):
-        if self.__is_valid_position(bullet.position):
-            map = self.model.level.map
-            collisions = self.__get_collisions(bullet, bullet.position)
-            if collisions:
-                for object in collisions:
-                    del map[object.position*object.size]
-                    self.view.delete_object_view(object)
-                return
-            map[bullet.position*bullet.size] = bullet
+        if not bullet_positions in map: return
+        other_objects = [object for object in map[bullet_positions] if object and not object is bullet and isinstance(object, SolidMapObject)]
+
+        if other_objects:
+            for object in other_objects:
+                del map[object.position * object.size]
+                self.view.delete_object_view(object)
+            bullet.tank.shooting = False
+        else:
             self.view.create_object_view(bullet)
+            map[bullet_positions] = bullet
+            self.__bullets.append(bullet)
+        self.bullets_move()
+
+    def bullets_move(self):
+        map = self.model.level.map
+        time.sleep(.05)
+        for bullet in self.__bullets:
+            bullet_positions = bullet.position*bullet.size
+            del map[bullet_positions]
             bullet.position = bullet.position + bullet.direction
+            bullet_positions = bullet.position * bullet.size
             self.view.move_object_view(bullet)
-            self.__bullet_moves(bullet)
-        self.__bullets.remove(bullet)
-        self.view.delete_object_view(bullet)
+
+            if not bullet_positions in map:
+                self.__bullets.remove(bullet)
+                self.view.delete_object_view(bullet)
+                bullet.tank.shooting = False
+                break
+            other_objects = [object for object in map[bullet_positions] if object and not object is bullet and isinstance(object, SolidMapObject)]
+
+            if other_objects:
+                for object in other_objects:
+                    del map[object.position * object.size]
+                    self.view.delete_object_view(object)
+                self.__bullets.remove(bullet)
+                self.view.delete_object_view(bullet)
+                bullet.tank.shooting = False
+                break
+            
+            map[bullet_positions] = bullet
+
+        if self.__bullets: self.bullets_move()
 
     def __player_moves(self, player:AbstractPlayer, direction:MapObjectDirection):
         map = self.model.level.map
@@ -152,17 +143,3 @@ class GameController:
             tank.position = next_position
             map[next_positions] = tank
             return self.view.move_object_view(tank)
-
-    def __get_collisions(self, object:MapObject, position:MapPosition) -> list[MapObject]:
-        return [map_object for map_object in self.model.level.map[position*object.size] if map_object and map_object != object]
-
-    def __is_valid_position(self, position):
-        if not isinstance(position, MapPosition) and not isinstance(position, list):
-            raise TypeError(f"Wrong position type: {position}")
-        if isinstance(position, list):
-            for pos in position:
-                if not self.__is_valid_position(pos):
-                    return False
-            return True
-        else:
-            return position.x >= 0 and position.y >= 0 and position.y < self.model.level.map.height and position.x < self.model.level.map.width

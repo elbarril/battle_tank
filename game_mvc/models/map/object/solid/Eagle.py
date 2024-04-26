@@ -1,4 +1,4 @@
-from models.map.objects.SolidMapObject import SolidMapObject
+from ..abstract.SolidMapObject import SolidMapObject
     
 class Eagle(SolidMapObject):
     def __init__(self, position, size):

@@ -1,7 +1,7 @@
 from abc import ABC
 
-from models.map.MapObject import MapObject
-from models.map.MapObjectDirection import MapObjectDirection, UP
+from .. import MapObject
+from ..MapObjectDirection import MapObjectDirection, UP
 
 class MovableMapObject(MapObject, ABC):
     def __init__(self, position, size, direction=None, velocity=None):

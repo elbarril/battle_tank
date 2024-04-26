@@ -1,7 +1,7 @@
 from abc import ABC
 
-from models.map.MapPosition import MapPosition
-from models.map.MapObjectSize import MapObjectSize
+from ..MapPosition import MapPosition
+from .MapObjectSize import MapObjectSize
 
 class MapObject(ABC):
     __symbol = None

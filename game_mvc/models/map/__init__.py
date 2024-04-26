@@ -1,5 +1,5 @@
-from models.map.MapObject import MapObject
-from models.map.MapPosition import MapPosition, MapPositionCollection
+from .object import MapObject
+from .MapPosition import MapPosition, MapPositionCollection
 
 class Map:
     def __init__(self):

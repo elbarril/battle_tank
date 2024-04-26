@@ -1,15 +1,17 @@
-from models.map.MapObjectType import MapObjectType
+from ..map.object import MapObject
+from ..map.object.MapObjectType import MapObjectType
 
-from models.map.objects.Wall import Wall
-from models.map.objects.Block import Block
-from models.map.objects.Eagle import Eagle
-from models.map.objects.Forest import Forest
-from models.map.objects.Gravel import Gravel
-from models.map.objects.Lake import Lake
-from models.map.objects.PlayerTank import PlayerOneTank, PlayerTwoTank, PlayerTank
-from models.map.objects.BotTank import BotTank
+from ..map.object.passable import Forest
+from ..map.object.passable import Gravel
+from ..map.object.passable import Lake
 
-from models.map.MapObject import MapObject
+from ..map.object.solid import Wall
+from ..map.object.solid import Block
+from ..map.object.solid import Eagle
+
+from ..map.object.tank import BotTank
+from ..map.object.tank import PlayerOneTank, PlayerTwoTank, PlayerTank
+
 
 STATIC_OBJECT_TYPES:dict[MapObjectType, type[MapObject]] = {
     MapObjectType.WALL: Wall,

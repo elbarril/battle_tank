@@ -1,6 +1,6 @@
-from models.map.MapObject import MapObject
-from models.map.MapPosition import MapPosition
-from models.map.MapObjectSize import MapObjectSize
+from .. import MapObject
+from ...MapPosition import MapPosition
+from ..MapObjectSize import MapObjectSize
 
 class CompoundMapObject(MapObject):
     def __init__(self, position, size, map_object:type[MapObject], object_size:MapObjectSize):

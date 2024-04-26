@@ -1,4 +1,4 @@
-from models.map.MapObjectSize import MapObjectSize
+from .object.MapObjectSize import MapObjectSize
 
 class MapPositionCollection:
     def __init__(self, positions=None):

@@ -10,7 +10,7 @@ class GameState(Enum):
 
 class GameStateManager:
     def __init__(self):
-        self.__game_state = None
+        self.__game_state:GameState = None
         self.__valid_transitions = {
             None: [GameState.STARTED],
             GameState.STARTED: [GameState.PLAYERS_READY],
@@ -27,9 +27,10 @@ class GameStateManager:
     def __is_valid_state_transition(self, new_state):
         return new_state in self.__valid_transitions[self.__game_state]
 
-    def set_game_state(self, new_state):
+    def set_game_state(self, new_state:GameState):
         if self.__is_valid_state_transition(new_state):
             self.__game_state = new_state
+            print(self.__game_state.name)
         else:
             raise RuntimeError(f"Wrong next state: {new_state}. Current state: {self.__game_state}")
 

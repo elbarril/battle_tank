@@ -1,0 +1,10 @@
+- 0: None
+- W: Brick Wall
+- I: Iron Block
+- W: Water Puddles
+- F: Forest Trees
+- G: Gravel Rubbles
+- E: Eagle
+- O: Player One Tank
+- T: Player Two Tank
+- B: Bot Tank

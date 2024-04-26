@@ -1,17 +1,19 @@
 from csv import reader
 from os import walk
 
-from models.player import BotPlayerCollection
-from models.player import HumanPlayer
+from ..player import BotPlayerCollection
+from ..player import HumanPlayer
 
-from models.map import Map
-from models.map.MapObject import MapObject
-from models.map.MapObjectType import MapObjectType
-from models.map.CompoundMapObject import CompoundMapObject
-from models.map.MapPosition import MapPosition
-from models.map.MapObjectSize import MapObjectSize
+from ..map import Map
+from ..map import MapPosition
 
-from models.level.MapObjectFactory import MapObjectFactory
+from ..map.object import MapObject
+from ..map.object.MapObjectSize import MapObjectSize
+from ..map.object.MapObjectType import MapObjectType
+
+from ..map.object.abstract.CompoundMapObject import CompoundMapObject
+
+from ..level.MapObjectFactory import MapObjectFactory
 
 LEVEL_MAP_FILES = [map_file_path for map_file_path in next(walk("./maps/"), (None, None, []))[2]]
 
