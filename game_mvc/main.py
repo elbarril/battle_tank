@@ -4,13 +4,16 @@ from models import Game
 from views import GameView
 from controller import GameController
 
+
 def main(*args):
     game = Game()
     view = GameView()
     GameController(game, view).run()
 
+
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         args = sys.argv[1:]
         main(*args)
-    else: main()
+    else:
+        main()

@@ -1,6 +1,7 @@
 import unittest
 from models import Game
 
+
 class GameTest(unittest.TestCase):
     def setUp(self):
         self.game = Game()

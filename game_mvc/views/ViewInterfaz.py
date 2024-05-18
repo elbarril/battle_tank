@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 class ViewInterfaz(ABC):
     def __init__(self, keyboard):
         self.__keyboard = keyboard

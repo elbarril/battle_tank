@@ -3,6 +3,7 @@ from ..abstract.SolidMapObject import SolidMapObject
 
 from abc import abstractmethod
 
+
 class Tank(MovableMapObject, SolidMapObject):
     def __init__(self, position, size):
         super().__init__(position, size)

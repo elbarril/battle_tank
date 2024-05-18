@@ -1,5 +1,6 @@
 from ..abstract.SolidMapObject import SolidMapObject
-    
+
+
 class Eagle(SolidMapObject):
     def __init__(self, position, size):
         super().__init__(position, size)

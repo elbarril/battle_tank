@@ -2,11 +2,12 @@ from .. import MapObject
 from ...MapPosition import MapPosition
 from ..MapObjectSize import MapObjectSize
 
+
 class CompoundMapObject(MapObject):
-    def __init__(self, position, size, map_object:type[MapObject], object_size:MapObjectSize):
+    def __init__(self, position, size, map_object: type[MapObject], object_size: MapObjectSize):
         super().__init__(position, size)
         width, height = self.size // object_size
-        self.__objects:list[MapObject] = []
+        self.__objects: list[MapObject] = []
         for y in range(height):
             for x in range(width):
                 pos_x = self.position.x + object_size.width * x
@@ -27,4 +28,3 @@ class CompoundMapObject(MapObject):
 
     def __iter__(self):
         return iter(self.__objects)
-    

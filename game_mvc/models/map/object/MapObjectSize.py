@@ -10,7 +10,7 @@ class MapObjectSize:
     @property
     def height(self):
         return self.__height
-    
+
     def __iter__(self):
         return iter((self.width, self.height))
 
@@ -18,13 +18,13 @@ class MapObjectSize:
         if isinstance(other, int):
             result = self.__floordiv__(other)
             return result
-        
+
     def __floordiv__(self, other):
-        if isinstance(other, (MapObjectSize,int)):
+        if isinstance(other, (MapObjectSize, int)):
             if isinstance(other, int):
                 return MapObjectSize(self.width // 2, self.height // 2)
             else:
                 return MapObjectSize(self.width // other.width, self.height // other.height)
-    
+
     def __str__(self):
         return "w:%d h:%d" % (self.width, self.height)

@@ -1,6 +1,7 @@
 from .Tank import Tank
 from .Bullet import Bullet
 
+
 class PlayerTank(Tank):
     def __init__(self, player_number, position, size):
         super().__init__(position, size)
@@ -11,11 +12,13 @@ class PlayerTank(Tank):
     def shoot(self):
         return Bullet(self)
 
+
 class PlayerOneTank(PlayerTank):
     def __init__(self, position, size):
         super().__init__(1, position, size)
         self.symbol = "1"
         self.image = 'playertank'
+
 
 class PlayerTwoTank(PlayerTank):
     def __init__(self, position, size):

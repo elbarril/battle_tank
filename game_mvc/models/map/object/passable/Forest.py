@@ -1,7 +1,8 @@
 from ..MapObjectSize import MapObjectSize
 from ..abstract.PassableMapObjectCompound import PassableMapObjectCompound
 from ..abstract.PassableMapObject import PassableMapObject
-    
+
+
 class Tree(PassableMapObject):
     def __init__(self, position, size):
         super().__init__(position, size)
@@ -11,6 +12,7 @@ class Tree(PassableMapObject):
     def __str__(self):
         return "Tree p:%s s:%s" % (self.position, self.size)
 
+
 class Forest(PassableMapObjectCompound):
     def __init__(self, position, size):
-        super().__init__(position, size, Tree, MapObjectSize(2,2))
+        super().__init__(position, size, Tree, MapObjectSize(2, 2))

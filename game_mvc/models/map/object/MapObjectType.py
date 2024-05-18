@@ -13,6 +13,7 @@ from .solid import Eagle
 from .tank import BotTank
 from .tank import PlayerOneTank, PlayerTwoTank
 
+
 class MapObjectTypeCode(Enum):
     NONE = "0"
     WALL = "W"
@@ -25,13 +26,14 @@ class MapObjectTypeCode(Enum):
     EAGLE = "E"
     LAKE = "L"
 
+
 PLAYER_TANK_TYPES = [
-      MapObjectTypeCode.PLAYER_ONE,
-      MapObjectTypeCode.PLAYER_TWO
+    MapObjectTypeCode.PLAYER_ONE,
+    MapObjectTypeCode.PLAYER_TWO
 ]
 
 BOT_TANK_TYPES = [
-      MapObjectTypeCode.BOT_TANK
+    MapObjectTypeCode.BOT_TANK
 ]
 
 STATIC_TYPES = [
@@ -43,7 +45,7 @@ STATIC_TYPES = [
     MapObjectTypeCode.LAKE
 ]
 
-MAP_OBJECT_TYPES:dict[MapObjectTypeCode, type[MapObject]] = {
+MAP_OBJECT_TYPES: dict[MapObjectTypeCode, type[MapObject]] = {
     MapObjectTypeCode.NONE: None,
     MapObjectTypeCode.WALL: Wall,
     MapObjectTypeCode.IRON: Block,

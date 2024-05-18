@@ -1,6 +1,7 @@
 from .Tank import Tank
 from .Bullet import Bullet
 
+
 class BotTank(Tank):
     def __init__(self, position, size):
         super().__init__(position, size)

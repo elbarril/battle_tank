@@ -2,19 +2,22 @@ from views import TK_KEYBOARD
 from ..map.object import MapObjectDirection as direction
 from ..map.object.tank import PlayerTank
 
+
 class AbstractPlayer:
-    def __init__(self, tank:PlayerTank=None) -> None:
+    def __init__(self, tank: PlayerTank = None) -> None:
         self.__tank = tank
-    
+
     @property
     def tank(self) -> PlayerTank:
         return self.__tank
 
-    def set_tank(self, tank:PlayerTank) -> None:
+    def set_tank(self, tank: PlayerTank) -> None:
         self.__tank = tank
+
 
 class BotPlayer(AbstractPlayer):
     pass
+
 
 class BotPlayerCollection:
     def __init__(self):
@@ -25,28 +28,31 @@ class BotPlayerCollection:
         bot.set_tank(tank)
         self.__bots.append(bot)
 
+
 class PlayerAction:
-    def __init__(self, key:str) -> None:
+    def __init__(self, key: str) -> None:
         self.__key = key
 
     @property
     def key(self) -> str: return self.__key
+
 
 class PlayerMovementAction(PlayerAction):
     def __init__(self, key, direction):
         super().__init__(key)
         self.direction = direction
 
+
 class HumanPlayer(AbstractPlayer):
-    def __init__(self, number:int) -> None:
+    def __init__(self, number: int) -> None:
         self.__number = number
-        self.__movements:list[PlayerMovementAction] = []
-        self.__shooting:list[PlayerAction] = []
+        self.__movements: list[PlayerMovementAction] = []
+        self.__shooting: list[PlayerAction] = []
 
     @property
     def number(self) -> int:
         return self.__number
-    
+
     @property
     def movements(self) -> list[PlayerMovementAction]:
         return self.__movements
@@ -61,6 +67,7 @@ class HumanPlayer(AbstractPlayer):
         else:
             self.__shooting.append(PlayerAction(key))
 
+
 class PlayerOne(HumanPlayer):
     def __init__(self) -> None:
         super().__init__(1)
@@ -69,6 +76,7 @@ class PlayerOne(HumanPlayer):
         self.set_action(TK_KEYBOARD.LEFT, direction.LEFT)
         self.set_action(TK_KEYBOARD.RIGHT, direction.RIGHT)
         self.set_action(TK_KEYBOARD.M)
+
 
 class PlayerTwo(HumanPlayer):
     def __init__(self) -> None:

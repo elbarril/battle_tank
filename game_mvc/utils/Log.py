@@ -1,5 +1,6 @@
 import time
 
+
 def log_time_elapsed(event):
     def wrapper(*args, **kwargs):
         start_time = time.time()
