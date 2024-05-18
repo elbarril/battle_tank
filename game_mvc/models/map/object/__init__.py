@@ -67,3 +67,7 @@ class MapObject(ABC):
     @layer.setter
     def layer(self, layer):
         self.__layer = "layer %d" % layer
+
+    @classmethod
+    def create(cls, *args, **kwargs):
+        return cls(*args, **kwargs)

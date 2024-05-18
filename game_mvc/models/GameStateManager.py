@@ -1,4 +1,5 @@
 from enum import Enum
+from utils import Observable
 
 class GameState(Enum):
     STARTED = 0
@@ -8,8 +9,9 @@ class GameState(Enum):
     PAUSED = 4
     GAME_OVER = 5
 
-class GameStateManager:
+class GameStateManager(Observable):
     def __init__(self):
+        super().__init__()
         self.__game_state:GameState = None
         self.__valid_transitions = {
             None: [GameState.STARTED],
@@ -30,7 +32,7 @@ class GameStateManager:
     def set_game_state(self, new_state:GameState):
         if self.__is_valid_state_transition(new_state):
             self.__game_state = new_state
-            print(self.__game_state.name)
+            self.notify_observers(self.state)
         else:
             raise RuntimeError(f"Wrong next state: {new_state}. Current state: {self.__game_state}")
 
@@ -43,7 +45,7 @@ class GameStateManager:
     def level_ready(self):
         self.set_game_state(GameState.LEVEL_READY)
 
-    def level_start(self):
+    def level_playing(self):
         self.set_game_state(GameState.PLAYING)
 
     def level_paused(self):

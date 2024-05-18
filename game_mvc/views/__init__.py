@@ -1,12 +1,7 @@
-from tkinter import Label, Tk, Canvas, PhotoImage
+from tkinter import Label, Tk, Canvas, PhotoImage, Frame
 from tkinter import constants as tkconst
-
-from models.map import Map
-
-from models.map.object import MapObject
-
-from models.map.object.abstract import CompoundMapObject
-from models.map.object.abstract import MovableMapObject
+from models.GameStateManager import GameState
+from utils.Observable import Observer
 
 class TK_KEYBOARD:
     SPACE = "<space>"
@@ -21,111 +16,68 @@ class TK_KEYBOARD:
     S = "s"
     D = "d"
     P = 'p'
+    F = 'f'
 
-class GameView(Tk):
+class MapObjectView:
+    def __init__(self, map_view, id):
+        self.__id = id
+        self.__map_view = map_view
+
+    def rotate(self, image, color, width, height):
+        self.__map_view.update_object(self.__id, image, color, width, height)
+
+    def delete(self):
+        self.__map_view.delete_object(self.__id)
+
+    def move(self, move_x, move_y):
+        self.__map_view.move_object(self.__id, move_x, move_y)
+
+class MapView(Canvas):
     __enable_images = True
-    __enable_colors = True
 
-    __images:dict[str, PhotoImage] = {}    
-    __canvas_objects:dict[MapObject, int] = {}
-    
-    def __init__(self):
-        Tk.__init__(self)
-        self.__canvas = None
-        self.__mode_label = None
-        self.__pause_label = None
-        self.__fullscreen = True
+    def __init__(self, game_view, width, height, bg, **kwargs):
+        x, y = self.__get_pixel_coords(width, height)
+        super().__init__(game_view, width=x, height=y, bg=bg, **kwargs)
+        self.pack(expand=True)
+        self.__game_view = game_view
 
-        self.attributes("-fullscreen", self.__fullscreen)
-        self.bind("f", lambda e:self.__toggle_fullsreen())
+    def lift_layers(self, layers:list[str]):
+        for layer in sorted(layers):
+            self.lift(layer)
 
-    def __toggle_fullsreen(self):
-        self.__fullscreen = not self.__fullscreen
-        self.attributes("-fullscreen", self.__fullscreen)
-
-    def set_mode_label(self, mode):
-        self.__mode_label = Label(self, text="Mode: %d players." % mode)
-        self.__mode_label.pack()
-        self.update()
-
-    def remove_mode_label(self):
-        if self.__mode_label: self.__mode_label.destroy()
-        self.update()
-
-    def set_pause_label(self):
-        self.__pause_label = Label(self, text='<P> to resume\n<Esc> to back to menu\n<F> toggle fullscreen')
-        self.__pause_label.pack()
-        self.update()
-
-    def remove_pause_label(self):
-        if self.__pause_label: self.__pause_label.destroy()
-        self.update()
-
-    def set_map_canvas(self, map:Map):
-        self.__canvas = Canvas(self, bg=map.background_color)
-        x0, y0 = self.__get_pixel_coords(map.width, map.height)
-        self.__canvas.config(width=x0, height=y0)
-        self.__canvas.pack(expand=True)
-
-        for row in map:
-            for object in row: 
-                if object is not None: self.create_object_view(object)
-
-        for layer in sorted(map.layers):
-            self.__canvas.lift(layer)
-        self.update()
-
-    def remove_map_canvas(self):
-        if self.__canvas: self.__canvas.destroy()
-        self.__canvas_objects.clear()
-        self.update()
-
-    def create_object_view(self, object:MapObject):
-        if isinstance(object, CompoundMapObject):
-            for obj in object:
-                self.create_object_view(obj)
-        elif not object in self.__canvas_objects:
-            x0, y0, x1, y1 = self.__get_pixel_coords(object.position.x, object.position.y, object.size.width, object.size.height)
-            if object.image and self.__enable_images:
-                image = self.__get_object_image(object)
-                object_view = self.__canvas.create_image(x0, y0, image=image, anchor=tkconst.NW, tags=[object.layer])
-            elif object.color and self.__enable_colors:
-                object_view = self.__canvas.create_rectangle(x0, y0, x1, y1, fill=object.color, tags=[object.layer])
-            self.__canvas_objects.setdefault(object, object_view)
-        else: self.update_object_view(object)
-        self.update()
-
-    def delete_object_view(self, object:MapObject):
-        object_view = self.__canvas_objects.get(object)
-        if object_view:
-            self.__canvas_objects.pop(object)
-            self.__canvas.delete(object_view)
-            self.update()
-
-    def update_object_view(self, object:MapObject):
-        object_view = self.__canvas_objects.get(object)
-        if object_view:
-            if object.image and self.__enable_images:
-                image = self.__get_object_image(object)
-                self.__canvas.itemconfig(object_view, image=image)
-            elif object.color and self.__enable_colors:
-                self.__canvas.itemconfig(object_view, fill=object.color)
-        self.update()
-
-    def move_object_view(self, object:MovableMapObject):
-        object_view = self.__canvas_objects.get(object)
-        if object_view:
-            x0, y0 = self.__get_pixel_coords(object.direction.x, object.direction.y)
-            self.__canvas.move(object_view, x0, y0)
-        self.update()
-
-    def __get_object_image(self, object:MapObject):
-        if object.image in self.__images:
-            return self.__images[object.image]
+    def create_object(self, x, y, width, height, image, color, layer):
+        x0, y0, x1, y1 = self.__get_pixel_coords(x, y, width, height)
+        if self.__enable_images:
+            image = self.__game_view.get_image(image) or self.__game_view.create_image(image, width, height)
+            id = self.create_image(x0, y0, image=image, layer=layer)
         else:
-            image = PhotoImage(file='images/' + object.image + '.png')
-            image = image.subsample(4//object.size.width, 4//object.size.height)
-            return self.__images.setdefault(object.image, image)
+            id = self.create_rectangle(x0, y0, x1, y1, color, layer=layer)
+        self.update()
+        object_view = MapObjectView(self, id)
+        return object_view
+
+    def create_image(self, x, y, image, anchor=tkconst.NW, layer=None):
+        return super().create_image(x, y, image=image, anchor=anchor, tags=[layer])
+
+    def create_rectangle(self, x0, y0, x1, y1, color, layer):
+        return super().create_rectangle(x0, y0,  x1, y1, color=color, tags=[layer])
+
+    def delete_object(self, id):
+        self.delete(id)
+        self.update()
+
+    def update_object(self, id, image, color, width, height):
+        if self.__enable_images:
+            image = self.__game_view.get_image(image) or self.__game_view.create_image(image, width, height)
+            self.itemconfig(id, image=image)
+        else:
+            self.itemconfig(id, fill=color)
+        self.update()
+
+    def move_object(self, id, move_x, move_y):
+        x0, y0 = self.__get_pixel_coords(move_x, move_y)
+        self.move(id, x0, y0)
+        self.update()
 
     def __get_pixel_coords(self, x, y, width=None, height=None):
         x0 = x * 10
@@ -135,3 +87,111 @@ class GameView(Tk):
             y1 = y0 + height * 10
             return (x0, y0, x1, y1)
         return (x0, y0)
+
+class PauseFrame(Frame):
+    def __init__(self, game_view):
+        super().__init__(game_view)
+        self.__text = Label(self, text="PAUSE", relief="ridge", fg="red")
+        self.__text.pack()
+        self.place(x=0, y=0)
+        game_view.update()
+        frame_x = game_view.winfo_width() // 2 - self.__text.winfo_width() // 2
+        frame_y = game_view.winfo_height() // 2 - self.__text.winfo_height() // 2
+        self.place(x=frame_x, y=frame_y)
+
+class MenuFrame(Frame, Observer):
+    def __init__(self, game_view, modes, mode_selected, selector_image="playertank_right"):
+        Frame.__init__(self, game_view)
+        Observer.__init__(self)
+        self.pack()
+        self.__game_view = game_view
+        self.__mode_selector = {}
+        self.__selector_image = self.__game_view.get_image(selector_image) or self.__game_view.create_image(selector_image, 4, 4)
+        mode_frame = Frame(self)
+        mode_frame.pack(side="right", expand=True, fill="both")
+        selector_frame = Frame(self)
+        selector_frame.pack(side="left", expand=True, fill="both")
+        for mode in modes:
+            mode_selector = Label(selector_frame)
+            mode_selector.pack(side="top", expand=True, fill="both")
+            mode_label = Label(mode_frame, text=mode, width=8, height=2, font=("Arial", 14))
+            if mode == mode_selected:
+                mode_selector.config(image=self.__selector_image)
+            self.__mode_selector.setdefault(mode, mode_selector)
+            mode_label.pack(side="top", expand=True, fill="both")
+
+    def update(self, mode_selected):
+        for mode in self.__mode_selector:
+            if mode == mode_selected:
+                self.__mode_selector[mode].config(image=self.__selector_image)
+            else:
+                self.__mode_selector[mode].config(image="")
+        super().update()
+
+
+class GameView(Tk, Observer):
+    __images:dict[str, PhotoImage] = {}
+
+    def __init__(self, fullscreen=True):
+        Tk.__init__(self)
+        Observer.__init__(self)
+        self.__map_view = None
+        self.__menu_frame = None
+        self.__pause_frame = None
+        self.__fullscreen = fullscreen
+        self.resizable(False, False)
+
+        self.attributes("-fullscreen", self.__fullscreen)
+
+    @property
+    def map(self):
+        return self.__map_view
+    
+    @property
+    def fullscreen(self):
+        return self.__fullscreen
+    
+    @fullscreen.setter
+    def fullscreen(self, fullscreen):
+        self.__fullscreen = fullscreen
+        self.attributes("-fullscreen", self.__fullscreen)
+
+    def set_menu_frame(self, modes, mode_selected):
+        self.__menu_frame = MenuFrame(self, modes, mode_selected)
+        return self.__menu_frame
+    
+    def remove_menu_frame(self):
+        if self.__menu_frame: self.__menu_frame.destroy()
+
+    def set_pause_frame(self):
+        self.__pause_frame = PauseFrame(self)
+        return self.__pause_frame
+    
+    def remove_pause_frame(self):
+        if self.__pause_frame: self.__pause_frame.destroy()
+
+    def set_map_canvas(self, width, height, background_color):
+        self.__map_view = MapView(self, width=width, height=height, bg=background_color)
+        return self.__map_view
+
+    def remove_map_canvas(self):
+        if self.__map_view: self.__map_view.destroy()
+
+    def get_image(self, image_path):
+        if image_path in self.__images:
+            return self.__images[image_path]
+    
+    def create_image(self, image_path, width, height):
+        image = PhotoImage(file='images/' + image_path + '.png')
+        image = image.subsample(4//width, 4//height)
+        return self.__images.setdefault(image_path, image)
+    
+    def update(self, state=None):
+        if state is GameState.PAUSED:
+            self.set_pause_frame()
+        elif state is GameState.PLAYING and self.__pause_frame:
+            self.remove_pause_frame()
+        elif state is GameState.PLAYERS_READY:
+            self.remove_menu_frame()
+
+        super().update()

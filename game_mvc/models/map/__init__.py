@@ -1,4 +1,5 @@
 from .object import MapObject
+from .object.abstract import CompoundMapObject
 from .MapPosition import MapPosition, MapPositionCollection
 
 class Map:
@@ -6,7 +7,7 @@ class Map:
         self.__background_color = 'black'
         self.__width = 13 * 4
         self.__height = 13 * 4
-        self.__map = [[None for _ in range(self.__width)] for _ in range(self.__height)]
+        self.__map:list[list[MapObject|None]] = [[None for _ in range(self.__width)] for _ in range(self.__height)]
         self.__layers = []
     
     @property
@@ -33,7 +34,10 @@ class Map:
             raise TypeError(f"Wrong position type: {position}")
         if not isinstance(map_object, MapObject):
             raise TypeError(f"Wrong object type: {map_object}")
-        if isinstance(position, MapPositionCollection):
+        if isinstance(map_object, CompoundMapObject):
+            for obj in map_object:
+                self[obj.position*obj.size] = obj
+        elif isinstance(position, MapPositionCollection):
             for pos in position:
                 self[pos] = map_object
         else:

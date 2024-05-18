@@ -2,29 +2,26 @@ from .GameStateManager import GameStateManager
 from .GameModeManager import GameModeManager
 
 from .level import Level
+from .map import Map
 from .player import HumanPlayer, PlayerOne, PlayerTwo
 
-class Singleton:
-    __instances = {}
-    def __new__(cls):
-        if cls.__instances.get(cls) is None:
-            instance = super().__new__(cls)
-            cls.__instances.setdefault(cls, instance)
-        return cls.__instances.get(cls)
+from utils.Singleton import Singleton
 
 class Game(Singleton):
-    def __init__(self, config={}):
+    def __init__(self):
         self.__mode_manager = GameModeManager()
         self.__state_manager = GameStateManager()
 
         self.__players:dict[int, HumanPlayer] = {}
         self.__level:Level = None
+        self.__map:Map = None
     
-    def reset(self):
+    def restart(self):
         self.__mode_manager.set_one_player()
         self.__state_manager.game_init()
         self.__players:dict[int, HumanPlayer] = {}
         self.__level:Level = None
+        self.__map:Map = None
 
     def toggle_players_mode(self):
         if self.__mode_manager.is_one_player:
@@ -40,16 +37,29 @@ class Game(Singleton):
     
     def load_level(self, number=1):
         self.__level = Level(number)
-        self.__level.load_map_data()
-    
-    def load_map(self):
-        self.__level.add_statics_to_map()
-        self.__level.add_player_tanks_to_map(self.players)
-        self.__level.add_bot_tanks_to_map()
+        self.__level.create_level_objects()
         self.__state_manager.level_ready()
+
+    def load_map(self):
+        self.__map = Map()
+
+        for static in self.__level.statics:
+            if static.position*static.size in self.__map:
+                self.__map[static.position*static.size] = static
+
+        for player_tank in self.__level.player_tanks:
+            if player_tank.player_number in self.__players:
+                self.__players[player_tank.player_number].set_tank(player_tank)
+                if player_tank.position*player_tank.size in self.__map:
+                    self.__map[player_tank.position*player_tank.size] = player_tank
+
+        for bot_tank in self.__level.bot_tanks:
+            if bot_tank.position*bot_tank.size in self.__map:
+                self.__map[bot_tank.position*bot_tank.size] = bot_tank
+
     
     def play_level(self):
-        self.__state_manager.level_start()
+        self.__state_manager.level_playing()
     
     def pause_level(self):
         self.__state_manager.level_paused()
@@ -61,6 +71,10 @@ class Game(Singleton):
     @property
     def level(self):
         return self.__level
+    
+    @property
+    def map(self):
+        return self.__map
     
     @property
     def players(self):
