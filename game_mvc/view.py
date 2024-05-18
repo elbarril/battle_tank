@@ -1,7 +1,7 @@
 from models import Game
-from views import GameView, TK_KEYBOARD
 from models import GameModeManager
 from models import GameStateManager
+from views import GameView, TK_KEYBOARD
 
 
 def toggle_fullscreen():

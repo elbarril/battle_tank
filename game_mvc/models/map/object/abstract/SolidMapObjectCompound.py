@@ -1,5 +1,5 @@
-from .CompoundMapObject import CompoundMapObject
 from .SolidMapObject import SolidMapObject
+from .CompoundMapObject import CompoundMapObject
 
 
 class SolidMapObjectCompound(CompoundMapObject, SolidMapObject):

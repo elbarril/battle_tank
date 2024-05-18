@@ -1,8 +1,8 @@
-from ..abstract.MovableMapObject import MovableMapObject
-from ..abstract.SolidMapObject import SolidMapObject
+from .Tank import Tank
 from ..MapObjectSize import MapObjectSize
 from .. import MapObjectDirection as directions
-from .Tank import Tank
+from ..abstract.SolidMapObject import SolidMapObject
+from ..abstract.MovableMapObject import MovableMapObject
 
 
 class Bullet(MovableMapObject, SolidMapObject):

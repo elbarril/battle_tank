@@ -1,6 +1,6 @@
 from ..MapObjectSize import MapObjectSize
-from ..abstract.SolidMapObjectCompound import SolidMapObjectCompound
 from ..abstract.SolidMapObject import SolidMapObject
+from ..abstract.SolidMapObjectCompound import SolidMapObjectCompound
 
 
 class Brick(SolidMapObject):

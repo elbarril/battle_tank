@@ -1,6 +1,7 @@
 from views import TK_KEYBOARD
-from ..map.object import MapObjectDirection as direction
+
 from ..map.object.tank import PlayerTank
+from ..map.object import MapObjectDirection as direction
 
 
 class AbstractPlayer:

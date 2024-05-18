@@ -1,20 +1,17 @@
-from models import Game
-from views import GameView, TK_KEYBOARD
-from views import MapObjectView
+import time
 
+from models import Game
+from views import MapObjectView
+from views import GameView, TK_KEYBOARD
+
+from utils.Log import log_time_elapsed
 from models.map.object import MapObject
+from models.player import AbstractPlayer
+from models.map.object.tank import Bullet
+from .GameBindManager import GameBindManager
 from models.map.object import MapObjectDirection
 from models.map.object.abstract import SolidMapObject
 from models.map.object.abstract import CompoundMapObject
-from models.map.object.tank import Bullet
-
-from models.player import AbstractPlayer
-
-from .GameBindManager import GameBindManager
-
-from utils.Log import log_time_elapsed
-
-import time
 
 
 class GameController:

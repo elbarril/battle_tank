@@ -1,3 +1,3 @@
-from .Observable import *
-from .Singleton import *
 from .Log import *
+from .Singleton import *
+from .Observable import *

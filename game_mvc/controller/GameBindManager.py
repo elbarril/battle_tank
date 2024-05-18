@@ -1,5 +1,5 @@
-from typing import Callable
 from views import GameView
+from typing import Callable
 
 
 class GameBind:

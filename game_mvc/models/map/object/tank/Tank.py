@@ -1,7 +1,7 @@
-from ..abstract.MovableMapObject import MovableMapObject
-from ..abstract.SolidMapObject import SolidMapObject
-
 from abc import abstractmethod
+
+from ..abstract.SolidMapObject import SolidMapObject
+from ..abstract.MovableMapObject import MovableMapObject
 
 
 class Tank(MovableMapObject, SolidMapObject):

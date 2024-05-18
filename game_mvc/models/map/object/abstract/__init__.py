@@ -1,8 +1,6 @@
-from .CompoundMapObject import CompoundMapObject
-from .MovableMapObject import MovableMapObject
-
-from .PassableMapObject import PassableMapObject
-from .PassableMapObjectCompound import PassableMapObjectCompound
-
 from .SolidMapObject import SolidMapObject
+from .MovableMapObject import MovableMapObject
+from .CompoundMapObject import CompoundMapObject
+from .PassableMapObject import PassableMapObject
 from .SolidMapObjectCompound import SolidMapObjectCompound
+from .PassableMapObjectCompound import PassableMapObjectCompound

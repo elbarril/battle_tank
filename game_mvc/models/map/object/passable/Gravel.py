@@ -1,6 +1,6 @@
-from ..abstract.PassableMapObjectCompound import PassableMapObjectCompound
-from ..abstract.PassableMapObject import PassableMapObject
 from ..MapObjectSize import MapObjectSize
+from ..abstract.PassableMapObject import PassableMapObject
+from ..abstract.PassableMapObjectCompound import PassableMapObjectCompound
 
 
 class Rubble(PassableMapObject):

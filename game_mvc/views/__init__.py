@@ -1,7 +1,8 @@
-from tkinter import Label, Tk, Canvas, PhotoImage, Frame
 from tkinter import constants as tkconst
-from models.GameStateManager import GameState
+from tkinter import Label, Tk, Canvas, PhotoImage, Frame
+
 from utils.Observable import Observer
+from models.GameStateManager import GameState
 
 
 class TK_KEYBOARD:

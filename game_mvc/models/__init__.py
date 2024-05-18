@@ -1,11 +1,9 @@
-from .GameStateManager import GameStateManager
-from .GameModeManager import GameModeManager
-
-from .level import Level
 from .map import Map
-from .player import HumanPlayer, PlayerOne, PlayerTwo
-
+from .level import Level
 from utils.Singleton import Singleton
+from .GameModeManager import GameModeManager
+from .GameStateManager import GameStateManager
+from .player import HumanPlayer, PlayerOne, PlayerTwo
 
 
 class Game(Singleton):

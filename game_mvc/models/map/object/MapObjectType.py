@@ -1,16 +1,13 @@
 from enum import Enum
 
 from . import MapObject
-
-from .passable import Forest
-from .passable import Gravel
-from .passable import Lake
-
 from .solid import Wall
 from .solid import Block
 from .solid import Eagle
-
 from .tank import BotTank
+from .passable import Lake
+from .passable import Forest
+from .passable import Gravel
 from .tank import PlayerOneTank, PlayerTwoTank
 
 

@@ -1,16 +1,13 @@
-from csv import reader
 from os import walk
-
-from ..player import BotPlayerCollection
-from ..player import HumanPlayer
+from csv import reader
 
 from ..map import Map
 from ..map import MapPosition
-
+from ..player import HumanPlayer
 from ..map.object import MapObject
-from ..map.object.MapObjectSize import MapObjectSize
+from ..player import BotPlayerCollection
 from ..map.object.MapObjectType import *
-
+from ..map.object.MapObjectSize import MapObjectSize
 from ..map.object.abstract.CompoundMapObject import CompoundMapObject
 
 LEVEL_MAP_FILES = [map_file_path for map_file_path in next(

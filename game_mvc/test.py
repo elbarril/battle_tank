@@ -1,4 +1,5 @@
 import unittest
+
 from tests.GameTest import GameTest
 
 test_loader = unittest.TestLoader()

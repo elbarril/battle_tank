@@ -1,4 +1,5 @@
 import keyboard
+
 from models.map import Map
 from views.ViewInterfaz import ViewInterfaz
 
