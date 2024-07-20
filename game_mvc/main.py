@@ -6,9 +6,9 @@ from controller import GameController
 
 
 def main(*args):
-    game = Game()
+    model = Game()
     view = GameView()
-    GameController(game, view).run()
+    GameController(model, view).run()
 
 
 if __name__ == "__main__":

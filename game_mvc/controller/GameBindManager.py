@@ -15,9 +15,10 @@ class GameBind:
     def id(self) -> str:
         return self.__id
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if isinstance(other, GameBind):
             return self.key == other.key and self.id == other.id
+        return False
 
 
 class GameBindManager:
@@ -32,10 +33,6 @@ class GameBindManager:
     def remove(self, bind: GameBind) -> None:
         self.__view.unbind(bind.key, bind.id)
         self.__binds.remove(bind)
-
-    def clear(self) -> None:
-        for bind in self:
-            self.remove(bind)
 
     def __iter__(self) -> list[GameBind]:
         return iter(self.__binds)

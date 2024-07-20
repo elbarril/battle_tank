@@ -18,7 +18,33 @@ class GameController:
     def __init__(self, model: Game, view: GameView):
         self.model = model
         self.view = view
+
         self.binds = GameBindManager(view)
+
+        self.__menu_binds = {
+            TK_KEYBOARD.ESC: lambda e: self.__exit(),
+            TK_KEYBOARD.SPACE: lambda e: self.__play(),
+            TK_KEYBOARD.M: lambda e: self.__toggle_mode()
+        }
+
+        self.__pause_binds = {
+            TK_KEYBOARD.ESC: lambda e: self.__init_menu(),
+            TK_KEYBOARD.P: lambda e: self.__resume()
+        }
+
+        self.__level_binds = {
+            TK_KEYBOARD.P: lambda e: self.__pause()
+        }
+
+        for player in self.model.players:
+            for movement in player.movements:
+                self.__level_binds.setdefault(movement.key, lambda e,
+                               p=player,d=movement.direction: self.__player_moves(p,d))
+
+            for shooting in player.shooting:
+                self.__level_binds.setdefault(shooting.key, lambda e,
+                               p=player: self.__player_shoots(p))
+
 
         self.__bullets: list[Bullet] = []
 
@@ -28,13 +54,18 @@ class GameController:
         self.__init_menu()
         self.view.mainloop()
 
+    def __clear_binds(self) -> None:
+        for bind in self.binds: self.binds.remove(bind)
+
+    def __add_binds(self, binds_dict: dict) -> None:
+        for key, callable in binds_dict.items():
+            self.binds.add(key, callable)
+
     def __init_menu(self):
         self.model.restart()
         self.view.remove_map_canvas()
-        self.binds.clear()
-        self.binds.add(TK_KEYBOARD.ESC, lambda e: self.__exit())
-        self.binds.add(TK_KEYBOARD.SPACE, lambda e: self.__play())
-        self.binds.add(TK_KEYBOARD.M, lambda e: self.__toggle_mode())
+        self.__clear_binds()
+        self.__add_binds(self.__menu_binds)
 
     def __toggle_mode(self):
         self.model.toggle_players_mode()
@@ -45,7 +76,7 @@ class GameController:
         self.model.load_map()
         self.__play_level()
 
-    def __play_level(self):
+    def __create_map_level(self):
         map = self.model.map
         map_view = self.view.set_map_canvas(
             map.width, map.height, map.background_color)
@@ -68,23 +99,17 @@ class GameController:
                     self.__object_views.setdefault(object, object_view)
 
         map_view.lift_layers(map.layers)
-        self.binds.clear()
-        for player in self.model.players:
-            for movement in player.movements:
-                def move(
-                    e, p=player, d=movement.direction): return self.__player_moves(p, d)
-                self.binds.add(movement.key, move)
-            for shooting in player.shooting:
-                self.binds.add(shooting.key, lambda e,
-                               p=player: self.__player_shoots(p))
-        self.binds.add(TK_KEYBOARD.P, lambda e: self.__pause())
+
+    def __play_level(self):
+        self.__create_map_level()
+        self.__clear_binds()
+        self.__add_binds(self.__level_binds)
         self.model.play_level()
 
     def __pause(self):
         self.view.remove_map_canvas()
-        self.binds.clear()
-        self.binds.add(TK_KEYBOARD.ESC, lambda e: self.__init_menu())
-        self.binds.add(TK_KEYBOARD.P, lambda e: self.__resume())
+        self.__clear_binds()
+        self.__add_binds(self.__pause_binds)
         self.model.pause_level()
 
     def __resume(self):
